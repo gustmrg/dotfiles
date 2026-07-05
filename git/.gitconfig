@@ -1,0 +1,27 @@
+[user]
+	name = Gustavo Miranda
+
+[core]
+	autocrlf = input
+	excludesfile = ~/.gitignore_global
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = true
+
+[alias]
+	co = checkout
+	br = branch
+	ci = commit
+	st = status --short
+	l = log --oneline --decorate --graph
+
+[credential "https://github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential

@@ -1,0 +1,25 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.swp
+*.swo
+*~
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Local editor and tool state
+.idea/
+.vscode/.ropeproject/
+.ropeproject/
+
+# Agent/runtime state that should not be committed accidentally
+sessions/
+logs/
+cache/
+.cache/
