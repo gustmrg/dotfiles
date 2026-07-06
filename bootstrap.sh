@@ -188,6 +188,37 @@ apply_entry() {
     fi
 }
 
+ensure_gitconfig_include() {
+    local gitconfig="$HOME/.gitconfig"
+    local include_path="$HOME/.gitconfig.dotfiles"
+
+    if [ -L "$gitconfig" ]; then
+        warn "$gitconfig -> symlink found; backing up and replacing with local Git config"
+        backup_path "$gitconfig"
+    fi
+
+    if [ ! -e "$gitconfig" ]; then
+        cat > "$gitconfig" <<GITCONFIG
+[user]
+	name = Gustavo Miranda
+	# Set this per machine:
+	# email = you@example.com
+
+[include]
+	path = $include_path
+GITCONFIG
+        ok "$gitconfig -> local Git config created"
+        return
+    fi
+
+    if git config --global --get-all include.path | grep -Fxq "$include_path"; then
+        ok "$gitconfig -> already includes $include_path"
+    else
+        git config --global --add include.path "$include_path"
+        ok "$gitconfig -> added include.path $include_path"
+    fi
+}
+
 select_optional_links() {
     local selection=""
 
@@ -288,7 +319,7 @@ cd "$DOTFILES_DIR"
 # "repo_source" is relative to $DOTFILES_DIR
 SYMLINKS=(
     "shell/.zshrc:$HOME/.zshrc"
-    "git/.gitconfig:$HOME/.gitconfig"
+    "git/.gitconfig.dotfiles:$HOME/.gitconfig.dotfiles"
     "git/.gitignore_global:$HOME/.gitignore_global"
 )
 
@@ -321,6 +352,8 @@ fi
 for entry in "${SYMLINKS[@]}"; do
     apply_entry "$entry"
 done
+
+ensure_gitconfig_include
 
 if [ "$SELECT_CODEX_SKILLS" = true ]; then
     info "Copying Codex skills..."

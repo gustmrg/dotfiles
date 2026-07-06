@@ -1,6 +1,3 @@
-[user]
-	name = Gustavo Miranda
-
 [core]
 	autocrlf = input
 	excludesfile = ~/.gitignore_global
