@@ -35,6 +35,16 @@ Flags are not mandatory. If you run `./bootstrap.sh` in a terminal, it asks whic
 
 By default, bootstrap uses symlinks. Use `--copy` when you want to import the current repo state and do not plan to keep `~/dotfiles` on that machine.
 
+Recommended modes:
+
+```bash
+# Keep ~/dotfiles and sync future updates with git pull.
+./bootstrap.sh --all
+
+# Import everything once, then allow removing ~/dotfiles safely.
+./bootstrap.sh --copy --all
+```
+
 ## Importing On A Machine
 
 1. Clone or bootstrap this repository.
@@ -62,6 +72,13 @@ For unattended setup, use flags instead of the prompt:
 ```
 
 Use symlink mode when the repository will remain on the machine and should keep syncing via `git pull`. Use copy mode for temporary machines, agents, containers, or hosts where you want a one-time import.
+
+If you already used symlink mode but later want to remove this repository, first materialize the configs as real files:
+
+```bash
+./bootstrap.sh --copy --all
+rm -rf ~/dotfiles
+```
 
 ## Contents
 
