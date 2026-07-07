@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 #
-# bootstrap.sh - Set up dotfile symlinks in the home directory
+# bootstrap.sh - Set up dotfiles in the home directory
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/gustmrg/dotfiles/main/bootstrap.sh | bash
 #   or
 #   ./bootstrap.sh
 #
-# After the first run, keep configs updated with:
-#   git -C ~/dotfiles pull
+# Default install mode copies files so configs do not depend on keeping this
+# repository on the machine. Use --link to create symlinks instead.
 
 set -euo pipefail
 
@@ -16,7 +16,7 @@ REPO_URL="https://github.com/gustmrg/dotfiles.git"
 BOOTSTRAP_URL="https://raw.githubusercontent.com/gustmrg/dotfiles/main/bootstrap.sh"
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 BACKUP_DIR="${BACKUP_DIR:-$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)}"
-INSTALL_MODE="link"
+INSTALL_MODE="copy"
 
 # Output colors
 GREEN='\033[0;32m'
@@ -35,24 +35,25 @@ usage() {
 Usage: ./bootstrap.sh [options]
 
 Options:
-  --minimal        Link only core shell and git files; do not prompt
-  --copy           Copy files/directories instead of creating symlinks
-  --all            Link every optional config; do not prompt
-  --opencode       Link all OpenCode optional configs
-  --claude         Link Claude Code settings
-  --skills         Link global agent skills in ~/.agents/skills
+  --minimal        Install only core shell and git files; do not prompt
+  --copy           Copy files/directories instead of creating symlinks (default)
+  --link           Create symlinks instead of copying files/directories
+  --all            Install every optional config; do not prompt
+  --opencode       Install all OpenCode optional configs
+  --claude         Install Claude Code settings
+  --skills         Install global agent skills in ~/.agents/skills
   --codex          Copy Codex skills into ~/.codex/skills
-  --pi             Link Pi Coding Agent-specific configs
+  --pi             Install Pi Coding Agent-specific configs
   --help           Show this help
 
 When run interactively with no option, the script asks which optional configs
-to link. Enter multiple numbers separated by commas/spaces, or "all".
+to install. Enter multiple numbers separated by commas/spaces, or "all".
 
 Existing files, directories, or symlinks are backed up under:
   ~/.dotfiles-backup/<timestamp>/
 
-Default mode is symlink. Use --copy if you do not plan to keep this repository
-on the machine after bootstrap.
+Default mode is copy so configs do not depend on this repository remaining on
+the machine after bootstrap. Use --link if you want live symlinks to the repo.
 USAGE
 }
 
@@ -65,8 +66,8 @@ has_arg() {
     return 1
 }
 
-add_symlink() {
-    SYMLINKS+=("$1:$2")
+add_entry() {
+    ENTRIES+=("$1:$2")
 }
 
 backup_path() {
@@ -252,7 +253,7 @@ select_optional_links() {
     fi
 
     if [ ! -t 0 ]; then
-        warn "No interactive terminal detected; using core links only. Use --all or specific flags for optional configs."
+        warn "No interactive terminal detected; using core files only. Use --all or specific flags for optional configs."
         return
     fi
 
@@ -289,14 +290,20 @@ select_optional_links() {
 
 for arg in "$@"; do
     case "$arg" in
-        --minimal|--copy|--all|--opencode|--claude|--skills|--codex|--pi) ;;
+        --minimal|--copy|--link|--all|--opencode|--claude|--skills|--codex|--pi) ;;
         --help) usage; exit 0 ;;
         *) err "Unknown option: $arg"; usage; exit 1 ;;
     esac
 done
 
-if has_arg "--copy" "$@"; then
-    INSTALL_MODE="copy"
+if has_arg "--copy" "$@" && has_arg "--link" "$@"; then
+    err "Choose either --copy or --link, not both"
+    usage
+    exit 1
+fi
+
+if has_arg "--link" "$@"; then
+    INSTALL_MODE="link"
 fi
 
 # 1. Clone the repo if needed
@@ -314,10 +321,10 @@ fi
 
 cd "$DOTFILES_DIR"
 
-# 2. Define symlinks
+# 2. Define entries
 # Format: "repo_source:home_destination"
 # "repo_source" is relative to $DOTFILES_DIR
-SYMLINKS=(
+ENTRIES=(
     "shell/.zshrc:$HOME/.zshrc"
     "git/.gitconfig.dotfiles:$HOME/.gitconfig.dotfiles"
     "git/.gitignore_global:$HOME/.gitignore_global"
@@ -326,20 +333,20 @@ SYMLINKS=(
 select_optional_links "$@"
 
 if [ "$SELECT_OPENCODE" = true ]; then
-    add_symlink "opencode/agents" "$HOME/.config/opencode/agents"
-    add_symlink "opencode/opencode.jsonc" "$HOME/.config/opencode/opencode.jsonc"
+    add_entry "opencode/agents" "$HOME/.config/opencode/agents"
+    add_entry "opencode/opencode.jsonc" "$HOME/.config/opencode/opencode.jsonc"
 fi
 
 if [ "$SELECT_CLAUDE" = true ]; then
-    add_symlink "claude/settings.json" "$HOME/.claude/settings.json"
+    add_entry "claude/settings.json" "$HOME/.claude/settings.json"
 fi
 
 if [ "$SELECT_SHARED_SKILLS" = true ]; then
-    add_symlink "agents/skills" "$HOME/.agents/skills"
+    add_entry "agents/skills" "$HOME/.agents/skills"
 fi
 
 if [ "$SELECT_PI" = true ]; then
-    add_symlink "pi" "$HOME/.config/dotfiles-pi"
+    add_entry "pi" "$HOME/.config/dotfiles-pi"
 fi
 
 # 3. Apply files
@@ -349,7 +356,7 @@ else
     info "Creating symlinks..."
 fi
 
-for entry in "${SYMLINKS[@]}"; do
+for entry in "${ENTRIES[@]}"; do
     apply_entry "$entry"
 done
 
@@ -406,6 +413,7 @@ echo ""
 echo "  Optional setup without prompts:"
 echo "    ./bootstrap.sh --all"
 echo "    ./bootstrap.sh --opencode --claude --skills --codex"
+echo "    ./bootstrap.sh --link --all"
 echo ""
 echo "  Install mode used:"
 echo "    $INSTALL_MODE"
