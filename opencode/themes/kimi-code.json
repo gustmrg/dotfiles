@@ -1,0 +1,228 @@
+{
+  "$schema": "https://opencode.ai/theme.json",
+  "defs": {
+    "kimi_dark_primary": "#4FA8FF",
+    "kimi_dark_accent": "#5BC0BE",
+    "kimi_dark_text": "#E0E0E0",
+    "kimi_dark_strong": "#F5F5F5",
+    "kimi_dark_dim": "#888888",
+    "kimi_dark_muted": "#6B6B6B",
+    "kimi_dark_border": "#5A5A5A",
+    "kimi_dark_bg": "#121212",
+    "kimi_dark_panel": "#1A1A1A",
+    "kimi_dark_error": "#FF5252",
+    "kimi_light_primary": "#1565C0",
+    "kimi_light_accent": "#00838F",
+    "kimi_light_text": "#1A1A1A",
+    "kimi_light_strong": "#1A1A1A",
+    "kimi_light_dim": "#454545",
+    "kimi_light_muted": "#5F5F5F",
+    "kimi_light_border": "#737373",
+    "kimi_light_bg": "#FAFAFA",
+    "kimi_light_panel": "#F0F0F0",
+    "kimi_light_error": "#D32F2F"
+  },
+  "theme": {
+    "primary": {
+      "dark": "kimi_dark_primary",
+      "light": "kimi_light_primary"
+    },
+    "secondary": {
+      "dark": "kimi_dark_accent",
+      "light": "kimi_light_accent"
+    },
+    "accent": {
+      "dark": "kimi_dark_accent",
+      "light": "kimi_light_accent"
+    },
+    "error": {
+      "dark": "kimi_dark_error",
+      "light": "kimi_light_error"
+    },
+    "warning": {
+      "dark": "kimi_dark_accent",
+      "light": "kimi_light_accent"
+    },
+    "success": {
+      "dark": "kimi_dark_accent",
+      "light": "kimi_light_accent"
+    },
+    "info": {
+      "dark": "kimi_dark_primary",
+      "light": "kimi_light_primary"
+    },
+    "text": {
+      "dark": "kimi_dark_text",
+      "light": "kimi_light_text"
+    },
+    "textMuted": {
+      "dark": "kimi_dark_muted",
+      "light": "kimi_light_muted"
+    },
+    "background": {
+      "dark": "kimi_dark_bg",
+      "light": "kimi_light_bg"
+    },
+    "backgroundPanel": {
+      "dark": "kimi_dark_panel",
+      "light": "kimi_light_panel"
+    },
+    "backgroundElement": {
+      "dark": "kimi_dark_panel",
+      "light": "kimi_light_panel"
+    },
+    "border": {
+      "dark": "kimi_dark_border",
+      "light": "kimi_light_border"
+    },
+    "borderActive": {
+      "dark": "kimi_dark_primary",
+      "light": "kimi_light_primary"
+    },
+    "borderSubtle": {
+      "dark": "kimi_dark_muted",
+      "light": "kimi_light_muted"
+    },
+    "diffAdded": {
+      "dark": "kimi_dark_accent",
+      "light": "kimi_light_accent"
+    },
+    "diffRemoved": {
+      "dark": "kimi_dark_error",
+      "light": "kimi_light_error"
+    },
+    "diffContext": {
+      "dark": "kimi_dark_dim",
+      "light": "kimi_light_dim"
+    },
+    "diffHunkHeader": {
+      "dark": "kimi_dark_muted",
+      "light": "kimi_light_muted"
+    },
+    "diffHighlightAdded": {
+      "dark": "kimi_dark_accent",
+      "light": "kimi_light_accent"
+    },
+    "diffHighlightRemoved": {
+      "dark": "kimi_dark_error",
+      "light": "kimi_light_error"
+    },
+    "diffAddedBg": {
+      "dark": "kimi_dark_panel",
+      "light": "kimi_light_panel"
+    },
+    "diffRemovedBg": {
+      "dark": "kimi_dark_panel",
+      "light": "kimi_light_panel"
+    },
+    "diffContextBg": {
+      "dark": "kimi_dark_bg",
+      "light": "kimi_light_bg"
+    },
+    "diffLineNumber": {
+      "dark": "kimi_dark_muted",
+      "light": "kimi_light_muted"
+    },
+    "diffAddedLineNumberBg": {
+      "dark": "kimi_dark_panel",
+      "light": "kimi_light_panel"
+    },
+    "diffRemovedLineNumberBg": {
+      "dark": "kimi_dark_panel",
+      "light": "kimi_light_panel"
+    },
+    "markdownText": {
+      "dark": "kimi_dark_text",
+      "light": "kimi_light_text"
+    },
+    "markdownHeading": {
+      "dark": "kimi_dark_strong",
+      "light": "kimi_light_strong"
+    },
+    "markdownLink": {
+      "dark": "kimi_dark_primary",
+      "light": "kimi_light_primary"
+    },
+    "markdownLinkText": {
+      "dark": "kimi_dark_accent",
+      "light": "kimi_light_accent"
+    },
+    "markdownCode": {
+      "dark": "kimi_dark_accent",
+      "light": "kimi_light_accent"
+    },
+    "markdownBlockQuote": {
+      "dark": "kimi_dark_dim",
+      "light": "kimi_light_dim"
+    },
+    "markdownEmph": {
+      "dark": "kimi_dark_strong",
+      "light": "kimi_light_strong"
+    },
+    "markdownStrong": {
+      "dark": "kimi_dark_strong",
+      "light": "kimi_light_strong"
+    },
+    "markdownHorizontalRule": {
+      "dark": "kimi_dark_border",
+      "light": "kimi_light_border"
+    },
+    "markdownListItem": {
+      "dark": "kimi_dark_primary",
+      "light": "kimi_light_primary"
+    },
+    "markdownListEnumeration": {
+      "dark": "kimi_dark_accent",
+      "light": "kimi_light_accent"
+    },
+    "markdownImage": {
+      "dark": "kimi_dark_primary",
+      "light": "kimi_light_primary"
+    },
+    "markdownImageText": {
+      "dark": "kimi_dark_accent",
+      "light": "kimi_light_accent"
+    },
+    "markdownCodeBlock": {
+      "dark": "kimi_dark_text",
+      "light": "kimi_light_text"
+    },
+    "syntaxComment": {
+      "dark": "kimi_dark_muted",
+      "light": "kimi_light_muted"
+    },
+    "syntaxKeyword": {
+      "dark": "kimi_dark_primary",
+      "light": "kimi_light_primary"
+    },
+    "syntaxFunction": {
+      "dark": "kimi_dark_strong",
+      "light": "kimi_light_strong"
+    },
+    "syntaxVariable": {
+      "dark": "kimi_dark_text",
+      "light": "kimi_light_text"
+    },
+    "syntaxString": {
+      "dark": "kimi_dark_accent",
+      "light": "kimi_light_accent"
+    },
+    "syntaxNumber": {
+      "dark": "kimi_dark_accent",
+      "light": "kimi_light_accent"
+    },
+    "syntaxType": {
+      "dark": "kimi_dark_primary",
+      "light": "kimi_light_primary"
+    },
+    "syntaxOperator": {
+      "dark": "kimi_dark_primary",
+      "light": "kimi_light_primary"
+    },
+    "syntaxPunctuation": {
+      "dark": "kimi_dark_dim",
+      "light": "kimi_light_dim"
+    }
+  }
+}
+
