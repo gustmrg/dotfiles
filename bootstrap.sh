@@ -228,6 +228,7 @@ select_optional_links() {
     SELECT_SHARED_SKILLS=false
     SELECT_CODEX_SKILLS=false
     SELECT_PI=false
+    SELECT_GHOSTTY=false
 
     if has_arg "--minimal" "$@"; then
         return
@@ -239,6 +240,7 @@ select_optional_links() {
         SELECT_SHARED_SKILLS=true
         SELECT_CODEX_SKILLS=true
         SELECT_PI=true
+        SELECT_GHOSTTY=true
         return
     fi
 
@@ -247,8 +249,9 @@ select_optional_links() {
     if has_arg "--skills" "$@"; then SELECT_SHARED_SKILLS=true; fi
     if has_arg "--codex" "$@"; then SELECT_CODEX_SKILLS=true; fi
     if has_arg "--pi" "$@"; then SELECT_PI=true; fi
+    if has_arg "--ghostty" "$@"; then SELECT_GHOSTTY=true; fi
 
-    if [ "$SELECT_OPENCODE" = true ] || [ "$SELECT_CLAUDE" = true ] || [ "$SELECT_SHARED_SKILLS" = true ] || [ "$SELECT_CODEX_SKILLS" = true ] || [ "$SELECT_PI" = true ]; then
+    if [ "$SELECT_OPENCODE" = true ] || [ "$SELECT_CLAUDE" = true ] || [ "$SELECT_SHARED_SKILLS" = true ] || [ "$SELECT_CODEX_SKILLS" = true ] || [ "$SELECT_PI" = true ] || [ "$SELECT_GHOSTTY" = true ]; then
         return
     fi
 
@@ -264,6 +267,7 @@ select_optional_links() {
     echo "  3) Global agent skills (~/.agents/skills)"
     echo "  4) Codex skills (~/.codex/skills, copied without symlinks)"
     echo "  5) Pi Coding Agent-specific configs"
+    echo "  6) Ghostty terminal config"
     echo ""
     read -r -p "Choose numbers separated by commas/spaces, all, or Enter to skip: " selection
 
@@ -276,12 +280,14 @@ select_optional_links() {
                 SELECT_SHARED_SKILLS=true
                 SELECT_CODEX_SKILLS=true
                 SELECT_PI=true
+                SELECT_GHOSTTY=true
                 ;;
             1|opencode) SELECT_OPENCODE=true ;;
             2|claude) SELECT_CLAUDE=true ;;
             3|skills) SELECT_SHARED_SKILLS=true ;;
             4|codex) SELECT_CODEX_SKILLS=true ;;
             5|pi|raspberry|raspberry-pi) SELECT_PI=true ;;
+            6|ghostty) SELECT_GHOSTTY=true ;;
             "") ;;
             *) warn "Unknown option: $item" ;;
         esac
@@ -290,7 +296,7 @@ select_optional_links() {
 
 for arg in "$@"; do
     case "$arg" in
-        --minimal|--copy|--link|--all|--opencode|--claude|--skills|--codex|--pi) ;;
+        --minimal|--copy|--link|--all|--opencode|--claude|--skills|--codex|--pi|--ghostty) ;;
         --help) usage; exit 0 ;;
         *) err "Unknown option: $arg"; usage; exit 1 ;;
     esac
@@ -347,6 +353,10 @@ fi
 
 if [ "$SELECT_PI" = true ]; then
     add_entry "pi" "$HOME/.config/dotfiles-pi"
+fi
+
+if [ "$SELECT_GHOSTTY" = true ]; then
+    add_entry "ghostty/config" "$HOME/.config/ghostty/config"
 fi
 
 # 3. Apply files
@@ -412,7 +422,7 @@ echo "    curl -fsSL $BOOTSTRAP_URL | bash"
 echo ""
 echo "  Optional setup without prompts:"
 echo "    ./bootstrap.sh --all"
-echo "    ./bootstrap.sh --opencode --claude --skills --codex"
+    echo "    ./bootstrap.sh --opencode --claude --skills --codex --ghostty"
 echo "    ./bootstrap.sh --link --all"
 echo ""
 echo "  Install mode used:"
