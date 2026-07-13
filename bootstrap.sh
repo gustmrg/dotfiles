@@ -14,7 +14,19 @@ set -euo pipefail
 
 REPO_URL="https://github.com/gustmrg/dotfiles.git"
 BOOTSTRAP_URL="https://raw.githubusercontent.com/gustmrg/dotfiles/main/bootstrap.sh"
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+SCRIPT_REPO_DIR=""
+
+if [ -n "${BASH_SOURCE[0]:-}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+    if git -C "$script_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        SCRIPT_REPO_DIR="$script_dir"
+    fi
+fi
+
+if [ -z "${DOTFILES_DIR:-}" ]; then
+    DOTFILES_DIR="${SCRIPT_REPO_DIR:-$HOME/dotfiles}"
+fi
+
 BACKUP_DIR="${BACKUP_DIR:-$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)}"
 INSTALL_MODE="copy"
 
@@ -44,6 +56,7 @@ Options:
   --skills         Install global agent skills in ~/.agents/skills
   --codex          Copy Codex skills into ~/.codex/skills
   --pi             Install Pi Coding Agent-specific configs
+  --ghostty        Install the Ghostty terminal config
   --help           Show this help
 
 When run interactively with no option, the script asks which optional configs
@@ -53,7 +66,8 @@ Existing files, directories, or symlinks are backed up under:
   ~/.dotfiles-backup/<timestamp>/
 
 Default mode is copy so configs do not depend on this repository remaining on
-the machine after bootstrap. Use --link if you want live symlinks to the repo.
+the machine after bootstrap. Re-run bootstrap to apply future updates in copy
+mode. Use --link if you want live symlinks to the repo.
 USAGE
 }
 
@@ -90,6 +104,24 @@ backup_path() {
     ok "$target -> backed up to $backup_target"
 }
 
+paths_match() {
+    local src="$1"
+    local dst="$2"
+
+    # Copy mode must replace symlinks even when they resolve to the same data.
+    if [ -L "$dst" ]; then
+        return 1
+    fi
+
+    if [ -f "$src" ] && [ -f "$dst" ]; then
+        cmp -s "$src" "$dst"
+    elif [ -d "$src" ] && [ -d "$dst" ]; then
+        diff -qr "$src" "$dst" >/dev/null 2>&1
+    else
+        return 1
+    fi
+}
+
 copy_codex_skills() {
     local src_dir="codex/skills"
     local dst_dir="$HOME/.codex/skills"
@@ -108,6 +140,11 @@ copy_codex_skills() {
 
         if [ "$skill_name" = ".system" ]; then
             warn "Ignoring Codex system skill: $skill_name"
+            continue
+        fi
+
+        if paths_match "$skill" "$dst_dir/$skill_name"; then
+            ok "$dst_dir/$skill_name -> already up to date"
             continue
         fi
 
@@ -171,6 +208,11 @@ copy_entry() {
 
     if [ ! -e "$src" ]; then
         warn "Source $DOTFILES_DIR/$src was not found in the repo; skipping"
+        return
+    fi
+
+    if paths_match "$src" "$dst"; then
+        ok "$dst -> already up to date"
         return
     fi
 
@@ -313,15 +355,23 @@ if has_arg "--link" "$@"; then
 fi
 
 # 1. Clone the repo if needed
-if [ ! -d "$DOTFILES_DIR" ]; then
+if [ ! -e "$DOTFILES_DIR" ]; then
     info "Cloning dotfiles into $DOTFILES_DIR..."
     git clone "$REPO_URL" "$DOTFILES_DIR"
     ok "Repository cloned"
-elif [ -d "$DOTFILES_DIR/.git" ] && [ "$(cd "$DOTFILES_DIR" && pwd -P)" = "$(pwd -P)" ]; then
+elif ! git -C "$DOTFILES_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    err "$DOTFILES_DIR exists but is not a Git repository"
+    err "Move it elsewhere or set DOTFILES_DIR to a dotfiles clone"
+    exit 1
+elif [ -n "$SCRIPT_REPO_DIR" ] && [ "$(cd "$DOTFILES_DIR" && pwd -P)" = "$SCRIPT_REPO_DIR" ]; then
     info "Running from the local clone at $DOTFILES_DIR; skipping pull."
 else
+    if [ -n "$(git -C "$DOTFILES_DIR" status --porcelain)" ]; then
+        err "Repository at $DOTFILES_DIR has uncommitted changes; refusing to pull"
+        exit 1
+    fi
     info "Repository already exists at $DOTFILES_DIR; pulling updates..."
-    git -C "$DOTFILES_DIR" pull --rebase --quiet
+    git -C "$DOTFILES_DIR" pull --ff-only
     ok "Repository updated"
 fi
 
@@ -410,11 +460,9 @@ if [ "$INSTALL_MODE" = "copy" ]; then
     echo "  Copy mode was used. Config files no longer depend on this repository."
     echo "  Re-run bootstrap to import future repository updates."
 else
-    echo "  From now on, on any machine:"
-    echo "    git -C ~/dotfiles pull"
-    echo ""
-    echo "  Or add this to ~/.zshrc for convenience:"
-    echo "    git -C ~/dotfiles pull --rebase --quiet 2>/dev/null"
+    echo "  Link mode was used. Linked configs receive repository updates immediately."
+    echo "  Run 'dotsync' from an interactive Zsh shell to pull safely."
+    echo "  Re-run bootstrap when copied Codex skills need to be refreshed."
 fi
 echo ""
 echo "  New machine? Run:"
@@ -422,7 +470,7 @@ echo "    curl -fsSL $BOOTSTRAP_URL | bash"
 echo ""
 echo "  Optional setup without prompts:"
 echo "    ./bootstrap.sh --all"
-    echo "    ./bootstrap.sh --opencode --claude --skills --codex --ghostty"
+echo "    ./bootstrap.sh --opencode --claude --skills --codex --ghostty"
 echo "    ./bootstrap.sh --link --all"
 echo ""
 echo "  Install mode used:"

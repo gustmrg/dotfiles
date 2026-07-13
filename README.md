@@ -16,7 +16,7 @@ Or from an existing clone:
 ./bootstrap.sh
 ```
 
-The bootstrap script creates symlinks from this repository into the home directory. Existing files, directories, or symlinks are backed up before being replaced.
+The bootstrap script copies configuration files into the home directory by default. Existing files, directories, or symlinks are backed up before being replaced; unchanged copies are left in place.
 
 Backups are written to:
 
@@ -24,7 +24,7 @@ Backups are written to:
 ~/.dotfiles-backup/<timestamp>/
 ```
 
-Flags are not mandatory. If you run `./bootstrap.sh` in a terminal, it asks which optional configs you want to link. Use flags only when you want to skip the prompt, for example in a non-interactive setup:
+Flags are not mandatory. If you run `./bootstrap.sh` in a terminal, it asks which optional configs you want to install. Use flags when you want to skip the prompt, for example in a non-interactive setup:
 
 ```bash
 ./bootstrap.sh --minimal
@@ -33,21 +33,21 @@ Flags are not mandatory. If you run `./bootstrap.sh` in a terminal, it asks whic
 ./bootstrap.sh --opencode --claude --skills --codex
 ```
 
-By default, bootstrap uses symlinks. Use `--copy` when you want to import the current repo state and do not plan to keep `~/dotfiles` on that machine.
+By default, bootstrap copies files. Use `--link` when you want home-directory configs to remain connected to the repository and receive updates immediately after a Git pull.
 
 Recommended modes:
 
 ```bash
-# Keep ~/dotfiles and sync future updates with git pull.
-./bootstrap.sh --all
+# Keep the clone and apply future Git updates immediately.
+./bootstrap.sh --link --all
 
 # Import everything once, then allow removing ~/dotfiles safely.
-./bootstrap.sh --copy --all
+./bootstrap.sh --all
 ```
 
 ## Importing On A Machine
 
-1. Clone or bootstrap this repository.
+1. Clone or bootstrap this repository. A directly executed `bootstrap.sh` uses the clone containing the script, even when it is not at `~/dotfiles`.
 
 ```bash
 git clone https://github.com/gustmrg/dotfiles.git ~/dotfiles
@@ -59,7 +59,7 @@ cd ~/dotfiles
 
 3. If a target file, directory, or symlink already exists, the script backs it up under `~/.dotfiles-backup/<timestamp>/` and then applies the repo version.
 
-4. After linking OpenCode or Claude settings, restart those tools so they reload config files.
+4. After installing OpenCode or Claude settings, restart those tools so they reload config files.
 
 For unattended setup, use flags instead of the prompt:
 
@@ -72,6 +72,15 @@ For unattended setup, use flags instead of the prompt:
 ```
 
 Use symlink mode when the repository will remain on the machine and should keep syncing via `git pull`. Use copy mode for temporary machines, agents, containers, or hosts where you want a one-time import.
+
+In link mode, run `dotsync` from Zsh to safely fast-forward the repository. In copy mode, pulling only updates the repository; rerun `./bootstrap.sh` to apply the new files to your home directory.
+
+If the repository path cannot be inferred, set it explicitly:
+
+```bash
+DOTFILES_DIR="$HOME/src/dotfiles" ./bootstrap.sh --link --all
+dotsync "$HOME/src/dotfiles"
+```
 
 If you already used symlink mode but later want to remove this repository, first materialize the configs as real files:
 
@@ -86,8 +95,9 @@ rm -rf ~/dotfiles
 - `claude/` - Claude Code settings.
 - `codex/skills/` - Codex-specific skills copied into `~/.codex/skills`.
 - `agents/skills/` - Skills shared by multiple agent tools via `~/.agents/skills`.
-- `shell/` - Shell startup files linked into the home directory.
+- `shell/` - Shell startup configuration copied or linked into the home directory.
 - `git/` - Git user defaults, aliases, and global ignore rules.
+- `ghostty/` - Ghostty terminal configuration.
 - `pi/` - Pi Coding Agent-specific configuration notes and future links.
 - `vscode/` - VS Code and Cursor editor configuration assets.
 - `vscode/anysphere.cursor-themes-0.0.2/` - Cursor theme extension files for VS Code-compatible editors.
@@ -101,5 +111,6 @@ VS Code settings are intentionally not symlinked; use the editor's native Settin
 ## Maintenance
 
 - Keep machine-specific secrets and credentials out of this repository.
+- Configure GitHub authentication per machine. With GitHub CLI, run `gh auth setup-git`; native credential helpers are also supported.
 - Prefer adding small, documented configuration files over large generated editor state.
 - Update the relevant directory README when adding new configuration areas.
