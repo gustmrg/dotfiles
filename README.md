@@ -16,7 +16,7 @@ Or from an existing clone:
 ./bootstrap.sh
 ```
 
-The bootstrap script copies configuration files into the home directory by default. Existing files, directories, or symlinks are backed up before being replaced; unchanged copies are left in place.
+The bootstrap script symlinks configuration files into the home directory by default, so a `git pull` (or `dotsync` from Zsh) applies updates immediately. Existing files, directories, or symlinks are backed up before being replaced; already-linked targets are left in place.
 
 Backups are written to:
 
@@ -33,16 +33,16 @@ Flags are not mandatory. If you run `./bootstrap.sh` in a terminal, it asks whic
 ./bootstrap.sh --opencode --claude --skills --codex
 ```
 
-By default, bootstrap copies files. Use `--link` when you want home-directory configs to remain connected to the repository and receive updates immediately after a Git pull.
+By default, bootstrap creates symlinks so home-directory configs stay connected to the repository and receive updates immediately after a Git pull. Use `--copy` for a one-time import on machines where the repository will not remain.
 
 Recommended modes:
 
 ```bash
-# Keep the clone and apply future Git updates immediately.
-./bootstrap.sh --link --all
+# Keep the clone and apply future Git updates immediately (default).
+./bootstrap.sh --all
 
 # Import everything once, then allow removing ~/dotfiles safely.
-./bootstrap.sh --all
+./bootstrap.sh --copy --all
 ```
 
 ## Importing On A Machine
@@ -71,9 +71,9 @@ For unattended setup, use flags instead of the prompt:
 ./bootstrap.sh --copy --all
 ```
 
-Use symlink mode when the repository will remain on the machine and should keep syncing via `git pull`. Use copy mode for temporary machines, agents, containers, or hosts where you want a one-time import.
+Symlink mode is the default and is right for machines where the repository remains and should keep syncing via `git pull`. Use copy mode for temporary machines, agents, containers, or hosts where you want a one-time import.
 
-In link mode, run `dotsync` from Zsh to safely fast-forward the repository. In copy mode, pulling only updates the repository; rerun `./bootstrap.sh` to apply the new files to your home directory.
+In link mode, run `dotsync` from Zsh to safely fast-forward the repository. In copy mode, pulling only updates the repository; rerun `./bootstrap.sh --copy` to apply the new files to your home directory.
 
 If the repository path cannot be inferred, set it explicitly:
 

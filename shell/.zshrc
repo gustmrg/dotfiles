@@ -36,3 +36,6 @@ dotsync() {
         print -- "dotsync: copy mode detected; re-run $repo/bootstrap.sh to apply updates"
     fi
 }
+
+# Machine-local overrides (unversioned); keep this file portable.
+[ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"

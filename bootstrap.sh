@@ -7,8 +7,9 @@
 #   or
 #   ./bootstrap.sh
 #
-# Default install mode copies files so configs do not depend on keeping this
-# repository on the machine. Use --link to create symlinks instead.
+# Default install mode creates symlinks so configs stay in sync with this
+# repository on every git pull. Use --copy for one-time imports on machines
+# where the repository will not remain.
 
 set -euo pipefail
 
@@ -28,7 +29,7 @@ if [ -z "${DOTFILES_DIR:-}" ]; then
 fi
 
 BACKUP_DIR="${BACKUP_DIR:-$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)}"
-INSTALL_MODE="copy"
+INSTALL_MODE="link"
 
 # Output colors
 GREEN='\033[0;32m'
@@ -48,8 +49,8 @@ Usage: ./bootstrap.sh [options]
 
 Options:
   --minimal        Install only core shell and git files; do not prompt
-  --copy           Copy files/directories instead of creating symlinks (default)
-  --link           Create symlinks instead of copying files/directories
+  --copy           Copy files/directories instead of creating symlinks
+  --link           Create symlinks instead of copying files/directories (default)
   --all            Install every optional config; do not prompt
   --opencode       Install all OpenCode optional configs
   --claude         Install Claude Code settings
@@ -65,9 +66,10 @@ to install. Enter multiple numbers separated by commas/spaces, or "all".
 Existing files, directories, or symlinks are backed up under:
   ~/.dotfiles-backup/<timestamp>/
 
-Default mode is copy so configs do not depend on this repository remaining on
-the machine after bootstrap. Re-run bootstrap to apply future updates in copy
-mode. Use --link if you want live symlinks to the repo.
+Default mode is link so configs stay in sync with this repository on every
+git pull (run 'dotsync' from an interactive Zsh shell). Use --copy for a
+one-time import when the repository will not remain on the machine; re-run
+bootstrap to apply future updates in copy mode.
 USAGE
 }
 
@@ -471,7 +473,7 @@ echo ""
 echo "  Optional setup without prompts:"
 echo "    ./bootstrap.sh --all"
 echo "    ./bootstrap.sh --opencode --claude --skills --codex --ghostty"
-echo "    ./bootstrap.sh --link --all"
+echo "    ./bootstrap.sh --copy --all"
 echo ""
 echo "  Install mode used:"
 echo "    $INSTALL_MODE"
