@@ -1,0 +1,35 @@
+# Work-context Git overrides.
+#
+# Setup on a work machine (see git/README.md for details):
+#
+#   1. Copy this file to ~/.gitconfig-work (unversioned, machine-local) and
+#      edit the values below.
+#
+#   2. Add an includeIf to ~/.gitconfig, AFTER the dotfiles include (later
+#      values win, so the ordering matters):
+#
+#        [include]
+#        	path = ~/.gitconfig.dotfiles
+#
+#        # Match by remote URL (Git >= 2.36):
+#        [includeIf "hasconfig:remote.*.url:git@github.com:mycompany/**"]
+#        	path = ~/.gitconfig-work
+#
+#        # Or match by directory layout:
+#        [includeIf "gitdir:~/work/**"]
+#        	path = ~/.gitconfig-work
+#
+#      The URL pattern must match how you actually clone; add a second
+#      includeIf block for https://github.com/mycompany/** if needed.
+#
+#   3. Verify from inside a work clone:
+#
+#        git config --get pull.ff      # -> only
+#        git config --get user.email   # -> work email
+
+[user]
+	email = you@company.com
+
+[pull]
+	# Never rewrite or merge shared branches silently; stop and decide manually.
+	ff = only

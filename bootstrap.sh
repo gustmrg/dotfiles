@@ -51,12 +51,12 @@ Options:
   --minimal        Install only core shell and git files; do not prompt
   --copy           Copy files/directories instead of creating symlinks
   --link           Create symlinks instead of copying files/directories (default)
-  --all            Install every optional config; do not prompt
+  --all            Install every general-purpose optional config; do not prompt
   --opencode       Install all OpenCode optional configs
   --claude         Install Claude Code settings
   --skills         Install global agent skills in ~/.agents/skills
   --codex          Copy Codex skills into ~/.codex/skills
-  --pi             Install Pi Coding Agent-specific configs
+  --pi             Install Pi Coding Agent-specific configs (not included by --all)
   --ghostty        Install the Ghostty terminal config
   --help           Show this help
 
@@ -244,15 +244,11 @@ ensure_gitconfig_include() {
 
     if [ ! -e "$gitconfig" ]; then
         cat > "$gitconfig" <<GITCONFIG
-[user]
-	name = Gustavo Miranda
-	# Set this per machine:
-	# email = you@example.com
-
 [include]
 	path = $include_path
 GITCONFIG
         ok "$gitconfig -> local Git config created"
+        warn "Git identity is not configured by bootstrap; set user.name and user.email per machine"
         return
     fi
 
@@ -283,7 +279,7 @@ select_optional_links() {
         SELECT_CLAUDE=true
         SELECT_SHARED_SKILLS=true
         SELECT_CODEX_SKILLS=true
-        SELECT_PI=true
+        if has_arg "--pi" "$@"; then SELECT_PI=true; fi
         SELECT_GHOSTTY=true
         return
     fi
@@ -323,7 +319,6 @@ select_optional_links() {
                 SELECT_CLAUDE=true
                 SELECT_SHARED_SKILLS=true
                 SELECT_CODEX_SKILLS=true
-                SELECT_PI=true
                 SELECT_GHOSTTY=true
                 ;;
             1|opencode) SELECT_OPENCODE=true ;;

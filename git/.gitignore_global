@@ -2,13 +2,12 @@
 .DS_Store
 Thumbs.db
 
-# Logs and temporary files
-*.log
+# Editor backup and swap files
 *.swp
 *.swo
 *~
 
-# Local environment files
+# Local environment files (secrets must never be committed)
 .env
 .env.*
 !.env.example
@@ -17,9 +16,3 @@ Thumbs.db
 .idea/
 .vscode/.ropeproject/
 .ropeproject/
-
-# Agent/runtime state that should not be committed accidentally
-sessions/
-logs/
-cache/
-.cache/
