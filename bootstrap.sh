@@ -62,6 +62,7 @@ Options:
   --codex          Copy Codex skills into ~/.codex/skills
   --pi             Install Pi Coding Agent-specific configs (not included by --all)
   --ghostty        Install the Ghostty terminal config
+  --fonts          Install Fira Code, IBM Plex Mono, and Source Code Pro
   --help           Show this help
 
 When run interactively with no option, the script asks which optional configs
@@ -315,6 +316,11 @@ select_optional_links() {
     SELECT_CODEX_SKILLS=false
     SELECT_PI=false
     SELECT_GHOSTTY=false
+    SELECT_FONTS=false
+
+    # Fonts are deliberately never included in --all or the interactive
+    # "all" selection. They require an explicit --fonts or menu selection.
+    if has_arg "--fonts" "$@"; then SELECT_FONTS=true; fi
 
     if has_arg "--minimal" "$@"; then
         return
@@ -337,7 +343,7 @@ select_optional_links() {
     if has_arg "--pi" "$@"; then SELECT_PI=true; fi
     if has_arg "--ghostty" "$@"; then SELECT_GHOSTTY=true; fi
 
-    if [ "$SELECT_OPENCODE" = true ] || [ "$SELECT_CLAUDE" = true ] || [ "$SELECT_SHARED_SKILLS" = true ] || [ "$SELECT_CODEX_SKILLS" = true ] || [ "$SELECT_PI" = true ] || [ "$SELECT_GHOSTTY" = true ]; then
+    if [ "$SELECT_OPENCODE" = true ] || [ "$SELECT_CLAUDE" = true ] || [ "$SELECT_SHARED_SKILLS" = true ] || [ "$SELECT_CODEX_SKILLS" = true ] || [ "$SELECT_PI" = true ] || [ "$SELECT_GHOSTTY" = true ] || [ "$SELECT_FONTS" = true ]; then
         return
     fi
 
@@ -354,6 +360,7 @@ select_optional_links() {
     echo "  4) Codex skills (~/.codex/skills, copied without symlinks)"
     echo "  5) Pi Coding Agent-specific configs"
     echo "  6) Ghostty terminal config"
+    echo "  7) Fonts (Fira Code, IBM Plex Mono, Source Code Pro)"
     echo ""
     read -r -p "Choose numbers separated by commas/spaces, all, or Enter to skip: " selection
 
@@ -373,6 +380,7 @@ select_optional_links() {
             4|codex) SELECT_CODEX_SKILLS=true ;;
             5|pi|raspberry|raspberry-pi) SELECT_PI=true ;;
             6|ghostty) SELECT_GHOSTTY=true ;;
+            7|fonts) SELECT_FONTS=true ;;
             "") ;;
             *) warn "Unknown option: $item" ;;
         esac
@@ -381,7 +389,7 @@ select_optional_links() {
 
 for arg in "$@"; do
     case "$arg" in
-        --minimal|--copy|--link|--all|--opencode|--claude|--skills|--codex|--pi|--ghostty) ;;
+        --minimal|--copy|--link|--all|--opencode|--claude|--skills|--codex|--pi|--ghostty|--fonts) ;;
         --help) usage; exit 0 ;;
         *) err "Unknown option: $arg"; usage; exit 1 ;;
     esac
@@ -470,6 +478,15 @@ if [ "$SELECT_CODEX_SKILLS" = true ]; then
     copy_codex_skills
 fi
 
+if [ "$SELECT_FONTS" = true ]; then
+    if [ ! -f "$DOTFILES_DIR/fonts/install.sh" ]; then
+        warn "Font installer was not found at $DOTFILES_DIR/fonts/install.sh; skipping"
+    else
+        info "Installing fonts (explicitly selected)..."
+        bash "$DOTFILES_DIR/fonts/install.sh" --yes
+    fi
+fi
+
 # 4. Create the repo .gitignore if missing
 if [ ! -f "$DOTFILES_DIR/.gitignore" ]; then
     cat > "$DOTFILES_DIR/.gitignore" << 'GITIGNORE'
@@ -515,6 +532,7 @@ echo ""
 echo "  Optional setup without prompts:"
 echo "    ./bootstrap.sh --all"
 echo "    ./bootstrap.sh --opencode --claude --skills --codex --ghostty"
+echo "    ./bootstrap.sh --fonts"
 echo "    ./bootstrap.sh --copy --all"
 echo ""
 echo "  Install mode used:"

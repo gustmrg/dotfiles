@@ -1,0 +1,4 @@
+# Family name | official release archive URL
+Fira Code|https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip
+IBM Plex Mono|https://github.com/IBM/plex/releases/download/v6.4.0/IBM-Plex-Mono.zip
+Source Code Pro|https://github.com/adobe-fonts/source-code-pro/releases/download/2.042R-u/1.062R-i/1.026R-vf/TTF-source-code-pro-2.042R-u_1.062R-i.zip

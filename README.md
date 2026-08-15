@@ -31,9 +31,12 @@ Flags are not mandatory. If you run `./bootstrap.sh` in a terminal, it asks whic
 ./bootstrap.sh --copy --all
 ./bootstrap.sh --all
 ./bootstrap.sh --opencode --claude --skills --codex
+./bootstrap.sh --fonts
 ```
 
 By default, bootstrap creates symlinks so home-directory configs stay connected to the repository and receive updates immediately after a Git pull. Use `--copy` for a one-time import on machines where the repository will not remain.
+
+Font installation is intentionally separate from `--all`; use `./bootstrap.sh --fonts` or explicitly choose the fonts option in the interactive menu.
 
 Recommended modes:
 
@@ -98,6 +101,7 @@ rm -rf ~/dotfiles
 - `shell/` - Shell startup configuration copied or linked into the home directory.
 - `git/` - Git user defaults, aliases, and global ignore rules.
 - `ghostty/` - Ghostty terminal configuration.
+- `fonts/` - Optional user-local installer for Fira Code, IBM Plex Mono, and Source Code Pro.
 - `pi/` - Pi Coding Agent-specific configuration notes and future links.
 - `vscode/` - VS Code and Cursor editor configuration assets.
 - `vscode/anysphere.cursor-themes-0.0.2/` - Cursor theme extension files for VS Code-compatible editors.
