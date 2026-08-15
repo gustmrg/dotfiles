@@ -10,6 +10,10 @@
 # Default install mode creates symlinks so configs stay in sync with this
 # repository on every git pull. Use --copy for one-time imports on machines
 # where the repository will not remain.
+#
+# ~/.zshrc is an exception: it is always a small local stub that sources
+# shell/.zshrc from this repository, so installers may append to it without
+# dirtying the repo.
 
 set -euo pipefail
 
@@ -65,6 +69,10 @@ to install. Enter multiple numbers separated by commas/spaces, or "all".
 
 Existing files, directories, or symlinks are backed up under:
   ~/.dotfiles-backup/<timestamp>/
+
+~/.zshrc is always installed as a local stub that sources shell/.zshrc from
+this repository (independent of --link/--copy), so installers can append to it
+without dirtying the repo.
 
 Default mode is link so configs stay in sync with this repository on every
 git pull (run 'dotsync' from an interactive Zsh shell). Use --copy for a
@@ -233,6 +241,44 @@ apply_entry() {
     fi
 }
 
+ensure_zshrc_stub() {
+    local zshrc="$HOME/.zshrc"
+    local repo_zshrc="$DOTFILES_DIR/shell/.zshrc"
+    local begin_marker="# >>> dotfiles zshrc >>>"
+    local end_marker="# <<< dotfiles zshrc <<<"
+    local stub tmp
+
+    if [ ! -f "$repo_zshrc" ]; then
+        warn "Source $repo_zshrc was not found in the repo; skipping zshrc stub"
+        return
+    fi
+
+    stub="$begin_marker
+# Managed by $DOTFILES_DIR/bootstrap.sh - local additions below are safe.
+[ -f \"$repo_zshrc\" ] && source \"$repo_zshrc\"
+$end_marker"
+
+    if [ -L "$zshrc" ]; then
+        warn "$zshrc -> symlink found; backing up and replacing with local stub"
+        backup_path "$zshrc"
+    fi
+
+    if [ -f "$zshrc" ]; then
+        if grep -Fq "$begin_marker" "$zshrc"; then
+            ok "$zshrc -> already sources the repo zshrc"
+        else
+            tmp=$(mktemp)
+            printf '%s\n\n' "$stub" | cat - "$zshrc" > "$tmp"
+            cat "$tmp" > "$zshrc"
+            rm -f "$tmp"
+            ok "$zshrc -> repo zshrc source block added at the top"
+        fi
+    else
+        printf '%s\n' "$stub" > "$zshrc"
+        ok "$zshrc -> stub created"
+    fi
+}
+
 ensure_gitconfig_include() {
     local gitconfig="$HOME/.gitconfig"
     local include_path="$HOME/.gitconfig.dotfiles"
@@ -378,7 +424,6 @@ cd "$DOTFILES_DIR"
 # Format: "repo_source:home_destination"
 # "repo_source" is relative to $DOTFILES_DIR
 ENTRIES=(
-    "shell/.zshrc:$HOME/.zshrc"
     "git/.gitconfig.dotfiles:$HOME/.gitconfig.dotfiles"
     "git/.gitignore_global:$HOME/.gitignore_global"
 )
@@ -417,6 +462,7 @@ for entry in "${ENTRIES[@]}"; do
     apply_entry "$entry"
 done
 
+ensure_zshrc_stub
 ensure_gitconfig_include
 
 if [ "$SELECT_CODEX_SKILLS" = true ]; then
@@ -454,7 +500,8 @@ echo -e "${GREEN}  Bootstrap complete!                         ${NC}"
 echo -e "${GREEN}══════════════════════════════════════════════${NC}"
 echo ""
 if [ "$INSTALL_MODE" = "copy" ]; then
-    echo "  Copy mode was used. Config files no longer depend on this repository."
+    echo "  Copy mode was used. Copied configs no longer depend on this repository."
+    echo "  ~/.zshrc still sources shell/.zshrc from the repository."
     echo "  Re-run bootstrap to import future repository updates."
 else
     echo "  Link mode was used. Linked configs receive repository updates immediately."
