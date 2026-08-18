@@ -1,0 +1,11 @@
+{
+  "lastChangelogVersion": "0.84.2",
+  "theme": "breezy-ocean",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-luna",
+  "defaultThinkingLevel": "high",
+  "packages": [
+    "npm:pi-mcp-adapter",
+    "npm:@ff-labs/pi-fff"
+  ]
+}

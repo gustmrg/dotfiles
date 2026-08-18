@@ -31,6 +31,7 @@ Flags are not mandatory. If you run `./bootstrap.sh` in a terminal, it asks whic
 ./bootstrap.sh --copy --all
 ./bootstrap.sh --all
 ./bootstrap.sh --opencode --claude --skills --codex
+./pi/install.sh
 ./bootstrap.sh --fonts
 ```
 
@@ -102,9 +103,19 @@ rm -rf ~/dotfiles
 - `git/` - Git user defaults, aliases, and global ignore rules.
 - `ghostty/` - Ghostty terminal configuration.
 - `fonts/` - Optional user-local installer for Fira Code, IBM Plex Mono, and Source Code Pro.
-- `pi/` - Pi Coding Agent-specific configuration notes and future links.
+- `pi/` - Pi Coding Agent themes, extensions, settings, and installer.
 - `vscode/` - VS Code and Cursor editor configuration assets.
 - `vscode/anysphere.cursor-themes-0.0.2/` - Cursor theme extension files for VS Code-compatible editors.
+
+## Pi Coding Agent
+
+Pi configuration is installed separately because its tracked files are copied, rather than symlinked:
+
+```bash
+./pi/install.sh
+```
+
+Use `./pi/install.sh --skip-packages` to skip reinstalling Pi's configured npm packages. Provider credentials are not stored in this repository; authenticate on each machine with Pi's `/login` command.
 
 ## VS Code
 

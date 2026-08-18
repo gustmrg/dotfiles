@@ -49,21 +49,20 @@ err()   { echo -e "${RED}❌${NC} $1"; }
 
 usage() {
     cat <<USAGE
-Usage: ./bootstrap.sh [options]
+🚀 Usage: ./bootstrap.sh [options]
 
 Options:
-  --minimal        Install only core shell and git files; do not prompt
-  --copy           Copy files/directories instead of creating symlinks
-  --link           Create symlinks instead of copying files/directories (default)
-  --all            Install every general-purpose optional config; do not prompt
-  --opencode       Install all OpenCode optional configs
-  --claude         Install Claude Code settings
-  --skills         Install global agent skills in ~/.agents/skills
-  --codex          Copy Codex skills into ~/.codex/skills
-  --pi             Install Pi Coding Agent-specific configs (not included by --all)
-  --ghostty        Install the Ghostty terminal config
-  --fonts          Install Fira Code, IBM Plex Mono, and Source Code Pro
-  --help           Show this help
+  🧱 --minimal        Install only core shell and git files; do not prompt
+  📋 --copy           Copy files/directories instead of creating symlinks
+  🔗 --link           Create symlinks instead of copying files/directories (default)
+  🌈 --all            Install every general-purpose optional config; do not prompt
+  🤖 --opencode       Install all OpenCode optional configs
+  🧠 --claude         Install Claude Code settings
+  🛠️  --skills         Install global agent skills in ~/.agents/skills
+  🧪 --codex          Copy Codex skills into ~/.codex/skills
+  👻 --ghostty        Install the Ghostty terminal config
+  🔤 --fonts          Install Fira Code, IBM Plex Mono, and Source Code Pro
+  ❓ --help           Show this help
 
 When run interactively with no option, the script asks which optional configs
 to install. Enter multiple numbers separated by commas/spaces, or "all".
@@ -112,7 +111,7 @@ backup_path() {
     backup_parent=$(dirname "$backup_target")
     mkdir -p "$backup_parent"
     mv "$target" "$backup_target"
-    ok "$target -> backed up to $backup_target"
+    ok "💾 $target -> backed up to $backup_target"
 }
 
 paths_match() {
@@ -127,7 +126,7 @@ paths_match() {
     if [ -f "$src" ] && [ -f "$dst" ]; then
         cmp -s "$src" "$dst"
     elif [ -d "$src" ] && [ -d "$dst" ]; then
-        diff -qr "$src" "$dst" >/dev/null 2>&1
+        diff -qr --exclude=node_modules "$src" "$dst" >/dev/null 2>&1
     else
         return 1
     fi
@@ -155,13 +154,13 @@ copy_codex_skills() {
         fi
 
         if paths_match "$skill" "$dst_dir/$skill_name"; then
-            ok "$dst_dir/$skill_name -> already up to date"
+            ok "🧠 $dst_dir/$skill_name -> already up to date"
             continue
         fi
 
         backup_path "$dst_dir/$skill_name"
         cp -R "$skill" "$dst_dir/$skill_name"
-        ok "$dst_dir/$skill_name -> skill copied"
+        ok "🧠 $dst_dir/$skill_name -> skill copied"
     done
 }
 
@@ -179,12 +178,12 @@ link_entry() {
         current_target=$(readlink "$dst")
         src_abs="$(cd "$(dirname "$src")" && pwd)/$(basename "$src")"
         if [ "$current_target" = "$src_abs" ]; then
-            ok "$dst -> already points to the repo"
+            ok "🔗 $dst -> already points to the repo"
         else
             warn "$dst -> points somewhere else ($current_target); backing up and replacing"
             backup_path "$dst"
             ln -s "$src_abs" "$dst"
-            ok "$dst -> symlink created"
+            ok "🔗 $dst -> symlink created"
         fi
     elif [ -f "$dst" ] || [ -d "$dst" ]; then
         warn "$dst -> file/directory already exists; backing up and replacing"
@@ -195,7 +194,7 @@ link_entry() {
         backup_path "$dst"
         src_abs="$(cd "$(dirname "$src")" && pwd)/$(basename "$src")"
         ln -s "$src_abs" "$dst"
-        ok "$dst -> symlink created"
+        ok "🔗 $dst -> symlink created"
     else
         if [ ! -e "$src" ]; then
             warn "Source $DOTFILES_DIR/$src was not found in the repo; skipping"
@@ -203,7 +202,7 @@ link_entry() {
         fi
         src_abs="$(cd "$(dirname "$src")" && pwd)/$(basename "$src")"
         ln -s "$src_abs" "$dst"
-        ok "$dst -> symlink created"
+        ok "🔗 $dst -> symlink created"
     fi
 }
 
@@ -223,13 +222,13 @@ copy_entry() {
     fi
 
     if paths_match "$src" "$dst"; then
-        ok "$dst -> already up to date"
+        ok "✅ $dst -> already up to date"
         return
     fi
 
     backup_path "$dst"
     cp -R "$src" "$dst"
-    ok "$dst -> copied"
+    ok "📋 $dst -> copied"
 }
 
 apply_entry() {
@@ -266,17 +265,17 @@ $end_marker"
 
     if [ -f "$zshrc" ]; then
         if grep -Fq "$begin_marker" "$zshrc"; then
-            ok "$zshrc -> already sources the repo zshrc"
+            ok "🐚 $zshrc -> already sources the repo zshrc"
         else
             tmp=$(mktemp)
             printf '%s\n\n' "$stub" | cat - "$zshrc" > "$tmp"
             cat "$tmp" > "$zshrc"
             rm -f "$tmp"
-            ok "$zshrc -> repo zshrc source block added at the top"
+            ok "🐚 $zshrc -> repo zshrc source block added at the top"
         fi
     else
         printf '%s\n' "$stub" > "$zshrc"
-        ok "$zshrc -> stub created"
+        ok "🐚 $zshrc -> stub created"
     fi
 }
 
@@ -294,16 +293,16 @@ ensure_gitconfig_include() {
 [include]
 	path = $include_path
 GITCONFIG
-        ok "$gitconfig -> local Git config created"
+        ok "🔧 $gitconfig -> local Git config created"
         warn "Git identity is not configured by bootstrap; set user.name and user.email per machine"
         return
     fi
 
     if git config --global --get-all include.path | grep -Fxq "$include_path"; then
-        ok "$gitconfig -> already includes $include_path"
+        ok "🔧 $gitconfig -> already includes $include_path"
     else
         git config --global --add include.path "$include_path"
-        ok "$gitconfig -> added include.path $include_path"
+        ok "🔧 $gitconfig -> added include.path $include_path"
     fi
 }
 
@@ -314,7 +313,6 @@ select_optional_links() {
     SELECT_CLAUDE=false
     SELECT_SHARED_SKILLS=false
     SELECT_CODEX_SKILLS=false
-    SELECT_PI=false
     SELECT_GHOSTTY=false
     SELECT_FONTS=false
 
@@ -331,7 +329,6 @@ select_optional_links() {
         SELECT_CLAUDE=true
         SELECT_SHARED_SKILLS=true
         SELECT_CODEX_SKILLS=true
-        if has_arg "--pi" "$@"; then SELECT_PI=true; fi
         SELECT_GHOSTTY=true
         return
     fi
@@ -340,10 +337,9 @@ select_optional_links() {
     if has_arg "--claude" "$@"; then SELECT_CLAUDE=true; fi
     if has_arg "--skills" "$@"; then SELECT_SHARED_SKILLS=true; fi
     if has_arg "--codex" "$@"; then SELECT_CODEX_SKILLS=true; fi
-    if has_arg "--pi" "$@"; then SELECT_PI=true; fi
     if has_arg "--ghostty" "$@"; then SELECT_GHOSTTY=true; fi
 
-    if [ "$SELECT_OPENCODE" = true ] || [ "$SELECT_CLAUDE" = true ] || [ "$SELECT_SHARED_SKILLS" = true ] || [ "$SELECT_CODEX_SKILLS" = true ] || [ "$SELECT_PI" = true ] || [ "$SELECT_GHOSTTY" = true ] || [ "$SELECT_FONTS" = true ]; then
+    if [ "$SELECT_OPENCODE" = true ] || [ "$SELECT_CLAUDE" = true ] || [ "$SELECT_SHARED_SKILLS" = true ] || [ "$SELECT_CODEX_SKILLS" = true ] || [ "$SELECT_GHOSTTY" = true ] || [ "$SELECT_FONTS" = true ]; then
         return
     fi
 
@@ -353,14 +349,13 @@ select_optional_links() {
     fi
 
     echo ""
-    info "Which optional configs do you want to set up?"
-    echo "  1) OpenCode agents and settings"
-    echo "  2) Claude Code settings"
-    echo "  3) Global agent skills (~/.agents/skills)"
-    echo "  4) Codex skills (~/.codex/skills, copied without symlinks)"
-    echo "  5) Pi Coding Agent-specific configs"
-    echo "  6) Ghostty terminal config"
-    echo "  7) Fonts (Fira Code, IBM Plex Mono, Source Code Pro)"
+    info "✨ Which optional configs do you want to set up?"
+    echo "  1) 🤖 OpenCode agents and settings"
+    echo "  2) 🧠 Claude Code settings"
+    echo "  3) 🛠️  Global agent skills (~/.agents/skills)"
+    echo "  4) 🧪 Codex skills (~/.codex/skills, copied without symlinks)"
+    echo "  5) 👻 Ghostty terminal config"
+    echo "  6) 🔤 Fonts (Fira Code, IBM Plex Mono, Source Code Pro)"
     echo ""
     read -r -p "Choose numbers separated by commas/spaces, all, or Enter to skip: " selection
 
@@ -378,9 +373,8 @@ select_optional_links() {
             2|claude) SELECT_CLAUDE=true ;;
             3|skills) SELECT_SHARED_SKILLS=true ;;
             4|codex) SELECT_CODEX_SKILLS=true ;;
-            5|pi|raspberry|raspberry-pi) SELECT_PI=true ;;
-            6|ghostty) SELECT_GHOSTTY=true ;;
-            7|fonts) SELECT_FONTS=true ;;
+            5|ghostty) SELECT_GHOSTTY=true ;;
+            6|fonts) SELECT_FONTS=true ;;
             "") ;;
             *) warn "Unknown option: $item" ;;
         esac
@@ -389,7 +383,7 @@ select_optional_links() {
 
 for arg in "$@"; do
     case "$arg" in
-        --minimal|--copy|--link|--all|--opencode|--claude|--skills|--codex|--pi|--ghostty|--fonts) ;;
+        --minimal|--copy|--link|--all|--opencode|--claude|--skills|--codex|--ghostty|--fonts) ;;
         --help) usage; exit 0 ;;
         *) err "Unknown option: $arg"; usage; exit 1 ;;
     esac
@@ -407,7 +401,7 @@ fi
 
 # 1. Clone the repo if needed
 if [ ! -e "$DOTFILES_DIR" ]; then
-    info "Cloning dotfiles into $DOTFILES_DIR..."
+    info "📥 Cloning dotfiles into $DOTFILES_DIR..."
     git clone "$REPO_URL" "$DOTFILES_DIR"
     ok "Repository cloned"
 elif ! git -C "$DOTFILES_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -415,13 +409,13 @@ elif ! git -C "$DOTFILES_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; t
     err "Move it elsewhere or set DOTFILES_DIR to a dotfiles clone"
     exit 1
 elif [ -n "$SCRIPT_REPO_DIR" ] && [ "$(cd "$DOTFILES_DIR" && pwd -P)" = "$SCRIPT_REPO_DIR" ]; then
-    info "Running from the local clone at $DOTFILES_DIR; skipping pull."
+    info "📍 Running from the local clone at $DOTFILES_DIR; skipping pull."
 else
     if [ -n "$(git -C "$DOTFILES_DIR" status --porcelain)" ]; then
         err "Repository at $DOTFILES_DIR has uncommitted changes; refusing to pull"
         exit 1
     fi
-    info "Repository already exists at $DOTFILES_DIR; pulling updates..."
+    info "🔄 Repository already exists at $DOTFILES_DIR; pulling updates..."
     git -C "$DOTFILES_DIR" pull --ff-only
     ok "Repository updated"
 fi
@@ -451,19 +445,15 @@ if [ "$SELECT_SHARED_SKILLS" = true ]; then
     add_entry "agents/skills" "$HOME/.agents/skills"
 fi
 
-if [ "$SELECT_PI" = true ]; then
-    add_entry "pi" "$HOME/.config/dotfiles-pi"
-fi
-
 if [ "$SELECT_GHOSTTY" = true ]; then
     add_entry "ghostty/config" "$HOME/.config/ghostty/config"
 fi
 
 # 3. Apply files
 if [ "$INSTALL_MODE" = "copy" ]; then
-    info "Copying files and directories..."
+    info "📋 Copying files and directories..."
 else
-    info "Creating symlinks..."
+    info "🔗 Creating symlinks..."
 fi
 
 for entry in "${ENTRIES[@]}"; do
@@ -474,7 +464,7 @@ ensure_zshrc_stub
 ensure_gitconfig_include
 
 if [ "$SELECT_CODEX_SKILLS" = true ]; then
-    info "Copying Codex skills..."
+    info "🧪 Copying Codex skills..."
     copy_codex_skills
 fi
 
@@ -482,7 +472,7 @@ if [ "$SELECT_FONTS" = true ]; then
     if [ ! -f "$DOTFILES_DIR/fonts/install.sh" ]; then
         warn "Font installer was not found at $DOTFILES_DIR/fonts/install.sh; skipping"
     else
-        info "Installing fonts (explicitly selected)..."
+        info "🔤 Installing fonts (explicitly selected)..."
         bash "$DOTFILES_DIR/fonts/install.sh" --yes
     fi
 fi
@@ -513,31 +503,31 @@ fi
 # 5. Final summary
 echo ""
 echo -e "${GREEN}══════════════════════════════════════════════${NC}"
-echo -e "${GREEN}  Bootstrap complete!                         ${NC}"
+echo -e "${GREEN}  🎉 Bootstrap complete!                     ${NC}"
 echo -e "${GREEN}══════════════════════════════════════════════${NC}"
 echo ""
 if [ "$INSTALL_MODE" = "copy" ]; then
-    echo "  Copy mode was used. Copied configs no longer depend on this repository."
-    echo "  ~/.zshrc still sources shell/.zshrc from the repository."
-    echo "  Re-run bootstrap to import future repository updates."
+    echo "  📋 Copy mode was used. Copied configs no longer depend on this repository."
+    echo "  🐚 ~/.zshrc still sources shell/.zshrc from the repository."
+    echo "  🔄 Re-run bootstrap to import future repository updates."
 else
-    echo "  Link mode was used. Linked configs receive repository updates immediately."
-    echo "  Run 'dotsync' from an interactive Zsh shell to pull safely."
-    echo "  Re-run bootstrap when copied Codex skills need to be refreshed."
+    echo "  🔗 Link mode was used. Linked configs receive repository updates immediately."
+    echo "  🔄 Run 'dotsync' from an interactive Zsh shell to pull safely."
+    echo "  🧪 Re-run bootstrap when copied Codex skills need to be refreshed."
 fi
 echo ""
-echo "  New machine? Run:"
+echo "  🆕 New machine? Run:"
 echo "    curl -fsSL $BOOTSTRAP_URL | bash"
 echo ""
-echo "  Optional setup without prompts:"
+echo "  ⚙️  Optional setup without prompts:"
 echo "    ./bootstrap.sh --all"
 echo "    ./bootstrap.sh --opencode --claude --skills --codex --ghostty"
 echo "    ./bootstrap.sh --fonts"
 echo "    ./bootstrap.sh --copy --all"
 echo ""
-echo "  Install mode used:"
+echo "  📦 Install mode used:"
 echo "    $INSTALL_MODE"
 echo ""
-echo "  Backups were written under:"
+echo "  💾 Backups were written under:"
 echo "    $BACKUP_DIR"
 echo ""
