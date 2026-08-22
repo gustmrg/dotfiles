@@ -75,7 +75,7 @@ function horizontalBorder(
 	}
 
 	if (label) {
-		const shown = ` ${label} `;
+		const shown = `─── ${label} `;
 		const fill = Math.max(0, width - visibleWidth(shown));
 		return paint(`${shown}${"─".repeat(fill)}`);
 	}
@@ -148,7 +148,7 @@ export class OpenTuiEditor extends CustomEditor {
 		const bottomIdx = findBottomBorderIndex(baseLines);
 
 		const result: string[] = [];
-		result.push(horizontalBorder(width, "top", borderPaint, baseLines[0], isBash ? "! shell mode" : undefined));
+		result.push(horizontalBorder(width, "top", borderPaint, baseLines[0], isBash ? "shell mode" : undefined));
 
 		for (let i = 1; i < bottomIdx; i++) {
 			let line = baseLines[i] ?? "";

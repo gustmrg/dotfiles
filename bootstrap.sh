@@ -58,6 +58,7 @@ Options:
   🌈 --all            Install every general-purpose optional config; do not prompt
   🤖 --opencode       Install all OpenCode optional configs
   🧠 --claude         Install Claude Code settings
+  🥧 --pi             Install Pi configuration and extension packages
   🛠️  --skills         Install global agent skills in ~/.agents/skills
   🧪 --codex          Copy Codex skills into ~/.codex/skills
   👻 --ghostty        Install the Ghostty terminal config
@@ -311,6 +312,7 @@ select_optional_links() {
 
     SELECT_OPENCODE=false
     SELECT_CLAUDE=false
+    SELECT_PI=false
     SELECT_SHARED_SKILLS=false
     SELECT_CODEX_SKILLS=false
     SELECT_GHOSTTY=false
@@ -327,6 +329,7 @@ select_optional_links() {
     if has_arg "--all" "$@"; then
         SELECT_OPENCODE=true
         SELECT_CLAUDE=true
+        SELECT_PI=true
         SELECT_SHARED_SKILLS=true
         SELECT_CODEX_SKILLS=true
         SELECT_GHOSTTY=true
@@ -335,11 +338,12 @@ select_optional_links() {
 
     if has_arg "--opencode" "$@"; then SELECT_OPENCODE=true; fi
     if has_arg "--claude" "$@"; then SELECT_CLAUDE=true; fi
+    if has_arg "--pi" "$@"; then SELECT_PI=true; fi
     if has_arg "--skills" "$@"; then SELECT_SHARED_SKILLS=true; fi
     if has_arg "--codex" "$@"; then SELECT_CODEX_SKILLS=true; fi
     if has_arg "--ghostty" "$@"; then SELECT_GHOSTTY=true; fi
 
-    if [ "$SELECT_OPENCODE" = true ] || [ "$SELECT_CLAUDE" = true ] || [ "$SELECT_SHARED_SKILLS" = true ] || [ "$SELECT_CODEX_SKILLS" = true ] || [ "$SELECT_GHOSTTY" = true ] || [ "$SELECT_FONTS" = true ]; then
+    if [ "$SELECT_OPENCODE" = true ] || [ "$SELECT_CLAUDE" = true ] || [ "$SELECT_PI" = true ] || [ "$SELECT_SHARED_SKILLS" = true ] || [ "$SELECT_CODEX_SKILLS" = true ] || [ "$SELECT_GHOSTTY" = true ] || [ "$SELECT_FONTS" = true ]; then
         return
     fi
 
@@ -352,10 +356,11 @@ select_optional_links() {
     info "✨ Which optional configs do you want to set up?"
     echo "  1) 🤖 OpenCode agents and settings"
     echo "  2) 🧠 Claude Code settings"
-    echo "  3) 🛠️  Global agent skills (~/.agents/skills)"
-    echo "  4) 🧪 Codex skills (~/.codex/skills, copied without symlinks)"
-    echo "  5) 👻 Ghostty terminal config"
-    echo "  6) 🔤 Fonts (Fira Code, IBM Plex Mono, Source Code Pro)"
+    echo "  3) 🥧 Pi configuration and extension packages"
+    echo "  4) 🛠️  Global agent skills (~/.agents/skills)"
+    echo "  5) 🧪 Codex skills (~/.codex/skills, copied without symlinks)"
+    echo "  6) 👻 Ghostty terminal config"
+    echo "  7) 🔤 Fonts (Fira Code, IBM Plex Mono, Source Code Pro)"
     echo ""
     read -r -p "Choose numbers separated by commas/spaces, all, or Enter to skip: " selection
 
@@ -365,16 +370,18 @@ select_optional_links() {
             all)
                 SELECT_OPENCODE=true
                 SELECT_CLAUDE=true
+                SELECT_PI=true
                 SELECT_SHARED_SKILLS=true
                 SELECT_CODEX_SKILLS=true
                 SELECT_GHOSTTY=true
                 ;;
             1|opencode) SELECT_OPENCODE=true ;;
             2|claude) SELECT_CLAUDE=true ;;
-            3|skills) SELECT_SHARED_SKILLS=true ;;
-            4|codex) SELECT_CODEX_SKILLS=true ;;
-            5|ghostty) SELECT_GHOSTTY=true ;;
-            6|fonts) SELECT_FONTS=true ;;
+            3|pi) SELECT_PI=true ;;
+            4|skills) SELECT_SHARED_SKILLS=true ;;
+            5|codex) SELECT_CODEX_SKILLS=true ;;
+            6|ghostty) SELECT_GHOSTTY=true ;;
+            7|fonts) SELECT_FONTS=true ;;
             "") ;;
             *) warn "Unknown option: $item" ;;
         esac
@@ -383,7 +390,7 @@ select_optional_links() {
 
 for arg in "$@"; do
     case "$arg" in
-        --minimal|--copy|--link|--all|--opencode|--claude|--skills|--codex|--ghostty|--fonts) ;;
+        --minimal|--copy|--link|--all|--opencode|--claude|--pi|--skills|--codex|--ghostty|--fonts) ;;
         --help) usage; exit 0 ;;
         *) err "Unknown option: $arg"; usage; exit 1 ;;
     esac
@@ -395,7 +402,9 @@ if has_arg "--copy" "$@" && has_arg "--link" "$@"; then
     exit 1
 fi
 
-if has_arg "--link" "$@"; then
+if has_arg "--copy" "$@"; then
+    INSTALL_MODE="copy"
+elif has_arg "--link" "$@"; then
     INSTALL_MODE="link"
 fi
 
@@ -468,6 +477,15 @@ if [ "$SELECT_CODEX_SKILLS" = true ]; then
     copy_codex_skills
 fi
 
+if [ "$SELECT_PI" = true ]; then
+    if [ ! -f "$DOTFILES_DIR/pi/install.sh" ]; then
+        warn "Pi installer was not found at $DOTFILES_DIR/pi/install.sh; skipping"
+    else
+        info "🥧 Installing Pi configuration and extension packages..."
+        bash "$DOTFILES_DIR/pi/install.sh"
+    fi
+fi
+
 if [ "$SELECT_FONTS" = true ]; then
     if [ ! -f "$DOTFILES_DIR/fonts/install.sh" ]; then
         warn "Font installer was not found at $DOTFILES_DIR/fonts/install.sh; skipping"
@@ -521,7 +539,7 @@ echo "    curl -fsSL $BOOTSTRAP_URL | bash"
 echo ""
 echo "  ⚙️  Optional setup without prompts:"
 echo "    ./bootstrap.sh --all"
-echo "    ./bootstrap.sh --opencode --claude --skills --codex --ghostty"
+echo "    ./bootstrap.sh --opencode --claude --pi --skills --codex --ghostty"
 echo "    ./bootstrap.sh --fonts"
 echo "    ./bootstrap.sh --copy --all"
 echo ""

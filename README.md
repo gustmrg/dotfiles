@@ -30,8 +30,8 @@ Flags are not mandatory. If you run `./bootstrap.sh` in a terminal, it asks whic
 ./bootstrap.sh --minimal
 ./bootstrap.sh --copy --all
 ./bootstrap.sh --all
-./bootstrap.sh --opencode --claude --skills --codex
-./pi/install.sh
+./bootstrap.sh --opencode --claude --pi --skills --codex
+./bootstrap.sh --pi
 ./bootstrap.sh --fonts
 ```
 
@@ -63,13 +63,14 @@ cd ~/dotfiles
 
 3. If a target file, directory, or symlink already exists, the script backs it up under `~/.dotfiles-backup/<timestamp>/` and then applies the repo version.
 
-4. After installing OpenCode or Claude settings, restart those tools so they reload config files.
+4. After installing OpenCode, Claude, or Pi settings, restart those tools so they reload config files. Pi configuration is copied as real files and its tracked npm packages are recreated from `pi/npm/package-lock.json`.
 
 For unattended setup, use flags instead of the prompt:
 
 ```bash
 ./bootstrap.sh --minimal
 ./bootstrap.sh --opencode --skills
+./bootstrap.sh --pi
 ./bootstrap.sh --codex
 ./bootstrap.sh --all
 ./bootstrap.sh --copy --all

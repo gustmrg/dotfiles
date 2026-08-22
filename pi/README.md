@@ -8,13 +8,22 @@ This directory contains the portable parts of the Pi Coding Agent configuration 
 - `models-store.json` - cached model catalog
 - `npm/` - package manifests for the configured Pi packages
 
-Install the configuration on the current machine with:
+Install the configuration on the current machine directly, or select Pi from the main bootstrap script:
 
 ```bash
 ./pi/install.sh
+./bootstrap.sh --pi
 ```
 
-The installer copies the tracked configuration files and resources into `${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}` rather than symlinking them. It also reinstalls the packages recorded in `npm/package-lock.json`; use `--skip-packages` to omit that step. npm may create its normal executable shims inside the generated `node_modules/` directory.
+Personal extensions are tracked as source files under `extensions/`. Packages added with `pi install` must be represented in both the `packages` array in `settings.json` and the npm manifest/lockfile under `npm/`. The installer copies the tracked configuration files and resources into `${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}` rather than symlinking them, then runs `npm ci` to recreate package installs. Use `--skip-packages` to omit that step. npm may create its normal executable shims inside the generated `node_modules/` directory.
+
+To refresh this snapshot after running `pi install` or `pi remove`, copy `~/.pi/agent/settings.json` and `~/.pi/agent/npm/package.json` back into their matching paths here, review the settings, then regenerate a portable lockfile:
+
+```bash
+npm install --prefix pi/npm --package-lock-only --ignore-scripts --no-audit --no-fund
+```
+
+Do not copy Pi's managed lockfile verbatim: it may omit peer dependency entries required by `npm ci` on a clean machine.
 
 Machine-specific or sensitive Pi state is intentionally not tracked:
 
