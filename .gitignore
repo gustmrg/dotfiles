@@ -31,3 +31,5 @@ temp/
 .env.*
 !.env.example
 
+# Machine-local Ghostty overrides
+ghostty/config.local

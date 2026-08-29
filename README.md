@@ -100,7 +100,7 @@ rm -rf ~/dotfiles
 - `agents/skills/` - Skills shared by multiple agent tools via `~/.agents/skills`.
 - `shell/` - Shell startup configuration copied or linked into the home directory.
 - `git/` - Git user defaults, aliases, and global ignore rules.
-- `ghostty/` - Ghostty terminal configuration.
+- `ghostty/` - Ghostty terminal configuration, including macOS overrides applied through an optional `config.local` include.
 - `fonts/` - Optional user-local installer for Fira Code, IBM Plex Mono, and Source Code Pro.
 - `vscode/` - VS Code and Cursor editor configuration assets.
 - `vscode/anysphere.cursor-themes-0.0.2/` - Cursor theme extension files for VS Code-compatible editors.

@@ -1,0 +1,20 @@
+# macOS-specific Ghostty overrides.
+#
+# The shared config loads this file through:
+#   config-file = ?config.local
+# bootstrap.sh links it to ~/.config/ghostty/config.local on macOS only, so
+# Linux machines run the shared config untouched. Later files override earlier
+# ones, so the keys here replace their shared counterparts.
+#
+# Reminder: the shared config's "TX-02 Retina" (Berkeley Mono) font is
+# commercial and not tracked in this repository. Install it manually on the
+# Mac or Ghostty will fall back to IBM Plex Mono.
+
+# Make Option act as Alt/Meta for shell and readline shortcuts. Without this,
+# macOS Option keypresses produce special characters instead.
+mac-option-as-alt = true
+
+# The shared config uses font-size = 10, tuned for a 27" 1080p display at 1x.
+# The MacBook Air's smaller HiDPI panel needs a larger point size to read the
+# same. Adjust to taste per machine in ~/.config/ghostty/config.local.
+font-size = 13

@@ -449,6 +449,11 @@ fi
 
 if [ "$SELECT_GHOSTTY" = true ]; then
     add_entry "ghostty/config" "$HOME/.config/ghostty/config"
+    # macOS-only overrides, picked up by the shared config's optional include:
+    # config-file = ?config.local
+    if [ "$(uname -s)" = "Darwin" ]; then
+        add_entry "ghostty/config.macos" "$HOME/.config/ghostty/config.local"
+    fi
 fi
 
 # 3. Apply files

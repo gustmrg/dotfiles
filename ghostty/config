@@ -10,3 +10,7 @@ shell-integration-features = no-cursor
 quit-after-last-window-closed = true
 quit-after-last-window-closed-delay = 5m
 
+# Machine-local overrides, loaded last so they win. bootstrap.sh links the
+# macOS-specific overrides here on Darwin; on other machines this file simply
+# does not exist and the ? prefix makes that a no-op.
+config-file = ?config.local
