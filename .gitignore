@@ -13,13 +13,9 @@
 *.log
 npm-debug.log*
 
-# Dependencies (installed by bootstrap, e.g. pi/package.json)
+# Dependencies (installed by bootstrap)
 node_modules/
 
-# Pi private/runtime state
-pi/sessions/
-pi/fff/
-pi/trust.json
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
@@ -34,3 +30,4 @@ temp/
 .env
 .env.*
 !.env.example
+
