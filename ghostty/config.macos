@@ -12,7 +12,9 @@
 
 # Make Option act as Alt/Meta for shell and readline shortcuts. Without this,
 # macOS Option keypresses produce special characters instead.
-mac-option-as-alt = true
+# Note: "mac-option-as-alt" is only valid on Ghostty tip; all stable releases
+# (<= 1.4) still use the "macos-" prefix.
+macos-option-as-alt = true
 
 # The shared config uses font-size = 10, tuned for a 27" 1080p display at 1x.
 # The MacBook Air's smaller HiDPI panel needs a larger point size to read the
