@@ -1,0 +1,125 @@
+{
+  "workbench.colorTheme": "Cursor Dark",
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "editor.fontSize": 12,
+  "editor.fontFamily": "'Fira Code','Droid Sans Mono', 'monospace', monospace",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "prettier.enable": true,
+  "editor.fontLigatures": true,
+  "auto-close-tag.disableOnLanguage": [],
+  "auto-close-tag.activationOnLanguage": [
+    "xml",
+    "php",
+    "blade",
+    "ejs",
+    "jinja",
+    "javascriptreact",
+    "typescriptreact",
+    "plaintext",
+    "markdown",
+    "vue",
+    "liquid",
+    "erb",
+    "lang-cfml",
+    "cfml",
+    "HTML (EEx)",
+    "HTML (Eex)",
+    "plist"
+  ],
+  "eslint.codeActionsOnSave.rules": null,
+  "debug.javascript.debugByLinkOptions": "on",
+  "terminal.external.osxExec": "iTerm.app",
+  "terminal.external.linuxExec": "gnome-terminal",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.fontFamily": "'TX-02','Fira Code', 'monospace'",
+  "terminal.integrated.fontLigatures.enabled": false,
+  "terminal.integrated.fontWeight": "300",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+  "eslint.format.enable": false,
+  "editor.formatOnSaveMode": "file",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll.eslint": "explicit"
+  },
+  "tailwindCSS.suggestions": true,
+  "tailwindCSS.experimental.classRegex": [
+    [
+      "tv\\((([^()]*|\\([^()]*\\))*)\\)",
+      "[\"'`]([^\"'`]*).*?[\"'`]"
+    ]
+  ],
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.formatOnSave": false,
+  "redhat.telemetry.enabled": false,
+  "security.workspace.trust.untrustedFiles": "open",
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "explorer.confirmDelete": false,
+  "docker.extension.enableComposeLanguageServer": false,
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "workbench.startupEditor": "none",
+  "diffEditor.ignoreTrimWhitespace": false,
+  "git.confirmSync": false,
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+  "debug.console.fontSize": 11,
+  "material-icon-theme.activeIconPack": "react",
+  "material-icon-theme.folders.associations": {
+    "worker": "temp",
+    "workers": "temp",
+    "storage": "database"
+  },
+  "window.autoDetectColorScheme": true,
+  "workbench.preferredDarkColorTheme": "Cursor Dark",
+  "workbench.preferredLightColorTheme": "Cursor Light",
+  "resharper.region.region": "Americas",
+  "resharper.dataSharing.allowDataSharing": true,
+  "workbench.iconTheme": "material-icon-theme",
+  "diffEditor.renderSideBySide": false,
+  "terminal.integrated.allowedLinkSchemes": [
+    "file",
+    "http",
+    "https",
+    "mailto",
+    "vscode",
+    "vscode-insiders",
+    "docker-desktop"
+  ],
+  "extensions.ignoreRecommendations": true,
+  "yaml.disableSchemaDetection": [
+    "**/.github/workflows/*.yml",
+    "**/.github/workflows/*.yaml",
+    "**/.gitea/workflows/*.yml",
+    "**/.gitea/workflows/*.yaml",
+    "**/.forgejo/workflows/*.yml",
+    "**/.forgejo/workflows/*.yaml"
+  ],
+  "js/ts.experimental.useTsgo": true,
+  "git.suggestSmartCommit": false,
+  "json.schemaDownload.trustedDomains": {
+    "https://raw.githubusercontent.com/catppuccin/vscode/catppuccin-vsc-v3.19.0/": true
+  },
+  "workbench.experimental.modernUI": true,
+  "terminal.integrated.minimumContrastRatio": 1,
+  "terminal.integrated.gpuAcceleration": "on",
+  "terminal.integrated.fontSize": 13
+}

@@ -5,6 +5,11 @@ This document saves my personal VS Code configurations and themes for backup and
 ## Contents
 
 - `anysphere.cursor-themes-0.0.2/` — Cursor themes extension (Dark, Dark Midnight, Dark High Contrast, Light)
+- `settings.json` — Full VS Code user settings snapshot
+
+This file is a snapshot of the current VS Code user settings, kept here as a
+portable backup for reuse across machines. It is **not** installed by
+`bootstrap.sh` — see the note in the repo root README about VS Code Settings Sync.
 
 ---
 
