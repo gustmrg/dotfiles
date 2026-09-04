@@ -441,6 +441,7 @@ fi
 
 if [ "$SELECT_CLAUDE" = true ]; then
     add_entry "claude/settings.json" "$HOME/.claude/settings.json"
+    add_entry "claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 fi
 
 if [ "$SELECT_SHARED_SKILLS" = true ]; then
