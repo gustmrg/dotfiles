@@ -32,7 +32,9 @@ dotsync() {
 
     git -C "$repo" pull --ff-only || return
 
-    if [ ! -L "$HOME/.zshrc" ]; then
+    # ~/.zshrc is always a local stub, so check a core file bootstrap links
+    # in link mode and copies in copy mode.
+    if [ -e "$HOME/.gitconfig.dotfiles" ] && [ ! -L "$HOME/.gitconfig.dotfiles" ]; then
         print -- "dotsync: copy mode detected; re-run $repo/bootstrap.sh to apply updates"
     fi
 }

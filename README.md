@@ -16,7 +16,7 @@ Or from an existing clone:
 ./bootstrap.sh
 ```
 
-The bootstrap script symlinks configuration files into the home directory by default, so a `git pull` (or `dotsync` from Zsh) applies updates immediately. Existing files, directories, or symlinks are backed up before being replaced; already-linked targets are left in place.
+The bootstrap script symlinks configuration files into the home directory by default, so a `git pull` (or `dotsync` from Zsh) applies updates immediately to linked configs (see [Updating](#updating) for the files that are always copied). Existing files, directories, or symlinks are backed up before being replaced; already-linked targets are left in place.
 
 Backups are written to:
 
@@ -91,6 +91,24 @@ If you already used symlink mode but later want to remove this repository, first
 ./bootstrap.sh --copy --all
 rm -rf ~/dotfiles
 ```
+
+## Updating
+
+From an interactive Zsh shell, run:
+
+```bash
+dotsync                      # uses $DOTFILES_DIR, or ~/dotfiles
+dotsync "$HOME/src/dotfiles" # or pass the clone explicitly
+```
+
+`dotsync` runs `git pull --ff-only` on the clone. It refuses to pull when the repository has uncommitted changes, and it never merges or rebases. Commit, stash, or discard local changes first.
+
+After a pull:
+
+- Linked configs (the default) are updated immediately.
+- In copy mode, `dotsync` reminds you to rerun `./bootstrap.sh --copy` to apply the new files.
+- `~/.claude/settings.json` is always a local copy that bootstrap never overwrites. Port repo changes into it by hand (see [claude/README.md](claude/README.md)).
+- Codex skills are always copied. Rerun `./bootstrap.sh --codex` to refresh them.
 
 ## Contents
 
