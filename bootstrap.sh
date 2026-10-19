@@ -241,6 +241,32 @@ apply_entry() {
     fi
 }
 
+# Claude Code rewrites ~/.claude/settings.json itself (/config, /model, theme),
+# so it is always a local copy, never a symlink, regardless of install mode.
+# The repo version only seeds new machines: an existing local file is kept.
+seed_claude_settings() {
+    local src="claude/settings.json"
+    local dst="$HOME/.claude/settings.json"
+
+    if [ ! -f "$src" ]; then
+        warn "Source $DOTFILES_DIR/$src was not found in the repo; skipping"
+        return
+    fi
+
+    mkdir -p "$(dirname "$dst")"
+
+    if [ -L "$dst" ]; then
+        warn "$dst -> symlink found; backing up and replacing with a local copy"
+        backup_path "$dst"
+    elif [ -e "$dst" ]; then
+        ok "🧠 $dst -> local copy kept (move it away and re-run to reseed from the repo)"
+        return
+    fi
+
+    cp "$src" "$dst"
+    ok "🧠 $dst -> seeded from the repo"
+}
+
 ensure_zshrc_stub() {
     local zshrc="$HOME/.zshrc"
     local repo_zshrc="$DOTFILES_DIR/shell/.zshrc"
@@ -440,7 +466,7 @@ if [ "$SELECT_OPENCODE" = true ]; then
 fi
 
 if [ "$SELECT_CLAUDE" = true ]; then
-    add_entry "claude/settings.json" "$HOME/.claude/settings.json"
+    # settings.json is handled by seed_claude_settings, always as a copy.
     add_entry "claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 fi
 
@@ -470,6 +496,10 @@ done
 
 ensure_zshrc_stub
 ensure_gitconfig_include
+
+if [ "$SELECT_CLAUDE" = true ]; then
+    seed_claude_settings
+fi
 
 if [ "$SELECT_CODEX_SKILLS" = true ]; then
     info "🧪 Copying Codex skills..."

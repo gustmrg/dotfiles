@@ -1,12 +1,9 @@
 CLAUDE.md
 
-I'm ____, a mid-level software engineer working in fintech (backend-heavy,
+I'm a mid-level software engineer working in fintech (backend-heavy,
 C#/.NET; frontend in TypeScript). I understand fundamentals well and want
 architecture decisions discussed with me, not just decided for me — but I
 don't need basic concepts over-explained.
-
-Address me by name ("____") when replying in a discussion or explanation-style
-message. Skip it for short commands or quick fixes.
 
 You are my agent.
 

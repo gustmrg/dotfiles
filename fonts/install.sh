@@ -141,6 +141,63 @@ want_family() {
     return 1
 }
 
+# Heuristic for variable-font filenames ("FiraCode-VF.ttf", "JetBrainsMono[wght].ttf",
+# "...Variable..."). Their named instances shadow the static weights of the same
+# family, which macOS Font Book reports as duplicate fonts.
+is_variable_font() {
+    case "$1" in
+        *'['*']'*|*-VF.*|*Variable*) return 0 ;;
+    esac
+    return 1
+}
+
+# Copy the fonts extracted from one archive into $FONT_DIR, avoiding duplicates:
+#   - If the archive bundles both .ttf and .otf for the same font, only .ttf is kept.
+#   - Variable fonts are dropped whenever the archive also ships static weights
+#     (they shadow those weights in Font Book). Archives with ONLY variable fonts
+#     are kept as-is.
+# Sets the global $found flag to true when at least one font was installed.
+install_extracted_fonts() {
+    local extract_dir="$1" filter="$2"
+    local list_file chosen_file line base ext_lower stem_lower has_static priority font_file
+
+    list_file="$TEMP_DIR/font-list.txt"
+    chosen_file="$TEMP_DIR/font-chosen.txt"
+
+    find "$extract_dir" -type f \( -iname '*.ttf' -o -iname '*.otf' \) \
+        ${filter:+-ipath "*${filter}*"} -print > "$list_file" 2>/dev/null || true
+
+    has_static=false
+    while IFS= read -r line; do
+        if ! is_variable_font "$(basename "$line")"; then
+            has_static=true
+            break
+        fi
+    done < "$list_file"
+
+    : > "$chosen_file"
+    while IFS= read -r line; do
+        [ -n "$line" ] || continue
+        base=$(basename "$line")
+        if [ "$has_static" = true ] && is_variable_font "$base"; then
+            continue
+        fi
+        ext_lower="$(printf '%s' "${base##*.}" | tr '[:upper:]' '[:lower:]')"
+        stem_lower="$(printf '%s' "${base%.*}" | tr '[:upper:]' '[:lower:]')"
+        priority=1
+        [ "$ext_lower" = "ttf" ] && priority=0
+        printf '%s|%s|%s\n' "$stem_lower" "$priority" "$line"
+    done < "$list_file" |
+        sort -t'|' -k1,1 -k2,2n |
+        awk -F'|' 'prev != $1 { print $3; prev = $1 }' > "$chosen_file"
+
+    found=false
+    while IFS= read -r font_file; do
+        found=true
+        cp -f "$font_file" "$FONT_DIR/"
+    done < "$chosen_file"
+}
+
 # Validate every requested family exists before downloading anything.
 if [ -n "$ONLY_LOWER" ]; then
     IFS=',' read -r -a REQUESTED <<< "$ONLY_LOWER"
@@ -201,11 +258,7 @@ while IFS='|' read -r family url filter; do
     mkdir -p "$extract_dir"
     unzip -q "$archive" -d "$extract_dir"
 
-    found=false
-    while IFS= read -r font_file; do
-        found=true
-        cp -f "$font_file" "$FONT_DIR/"
-    done < <(find "$extract_dir" -type f \( -iname '*.ttf' -o -iname '*.otf' \) ${filter:+-ipath "*${filter}*"} -print)
+    install_extracted_fonts "$extract_dir" "$filter"
 
     if [ "$found" = false ]; then
         echo "No TTF or OTF files found in the $family download." >&2
