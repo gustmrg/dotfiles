@@ -114,6 +114,16 @@ backup_path() {
     ok "💾 $target -> backed up to $backup_target"
 }
 
+backup_path_copy() {
+    local target="$1"
+    local rel="${target#$HOME/}"
+    local backup_target="$BACKUP_DIR/$rel"
+
+    mkdir -p "$(dirname "$backup_target")"
+    cp -p "$target" "$backup_target"
+    ok "💾 $target -> backed up to $backup_target"
+}
+
 paths_match() {
     local src="$1"
     local dst="$2"
@@ -241,9 +251,40 @@ apply_entry() {
     fi
 }
 
+# Fills in keys missing from an existing local settings.json with the repo's
+# values. Local values always win on conflict (deep merge, local applied last).
+merge_claude_settings() {
+    local src="$1"
+    local dst="$2"
+    local tmp
+
+    if ! command -v jq >/dev/null 2>&1; then
+        warn "jq not found; $dst kept as is (install jq and re-run to merge repo keys)"
+        return
+    fi
+
+    tmp=$(mktemp)
+    if ! jq -s '.[0] * .[1]' "$src" "$dst" > "$tmp"; then
+        rm -f "$tmp"
+        warn "$dst -> could not be parsed as JSON; kept as is"
+        return
+    fi
+
+    if [ "$(jq -S . "$tmp")" = "$(jq -S . "$dst")" ]; then
+        ok "🧠 $dst -> already has all repo keys"
+        rm -f "$tmp"
+        return
+    fi
+
+    backup_path_copy "$dst"
+    cat "$tmp" > "$dst"
+    rm -f "$tmp"
+    ok "🧠 $dst -> missing repo keys merged (local values kept)"
+}
+
 # Claude Code rewrites ~/.claude/settings.json itself (/config, /model, theme),
 # so it is always a local copy, never a symlink, regardless of install mode.
-# The repo version only seeds new machines: an existing local file is kept.
+# New machines are seeded from the repo; existing files only get missing keys.
 seed_claude_settings() {
     local src="claude/settings.json"
     local dst="$HOME/.claude/settings.json"
@@ -259,7 +300,7 @@ seed_claude_settings() {
         warn "$dst -> symlink found; backing up and replacing with a local copy"
         backup_path "$dst"
     elif [ -e "$dst" ]; then
-        ok "🧠 $dst -> local copy kept (move it away and re-run to reseed from the repo)"
+        merge_claude_settings "$src" "$dst"
         return
     fi
 
