@@ -35,6 +35,13 @@ fi
 BACKUP_DIR="${BACKUP_DIR:-$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)}"
 INSTALL_MODE="link"
 
+# Git Bash/MSYS/Cygwin: `ln -s` silently makes copies there, so link mode
+# cannot work. Default to copy mode instead.
+case "$(uname -s)" in
+    MINGW*|MSYS*|CYGWIN*) IS_WINDOWS=true ;;
+    *) IS_WINDOWS=false ;;
+esac
+
 # Output colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -320,6 +327,11 @@ ensure_zshrc_stub() {
         return
     fi
 
+    if [ "$IS_WINDOWS" = true ] && ! command -v zsh >/dev/null 2>&1; then
+        info "zsh not found on Windows; skipping zshrc stub"
+        return
+    fi
+
     stub="$begin_marker
 # Managed by $DOTFILES_DIR/bootstrap.sh - local additions below are safe.
 [ -f \"$repo_zshrc\" ] && source \"$repo_zshrc\"
@@ -348,7 +360,9 @@ $end_marker"
 
 ensure_gitconfig_include() {
     local gitconfig="$HOME/.gitconfig"
-    local include_path="$HOME/.gitconfig.dotfiles"
+    # Literal "~/" is expanded by Git itself; an absolute $HOME would be a
+    # POSIX path (/c/Users/...) that Git for Windows cannot resolve.
+    local include_path="~/.gitconfig.dotfiles"
 
     if [ -L "$gitconfig" ]; then
         warn "$gitconfig -> symlink found; backing up and replacing with local Git config"
@@ -465,7 +479,15 @@ fi
 if has_arg "--copy" "$@"; then
     INSTALL_MODE="copy"
 elif has_arg "--link" "$@"; then
-    INSTALL_MODE="link"
+    if [ "$IS_WINDOWS" = true ]; then
+        warn "--link is not supported on Windows (ln -s makes copies); using copy mode"
+        INSTALL_MODE="copy"
+    else
+        INSTALL_MODE="link"
+    fi
+elif [ "$IS_WINDOWS" = true ]; then
+    info "🪟 Windows detected; using copy mode"
+    INSTALL_MODE="copy"
 fi
 
 # 1. Clone the repo if needed
@@ -548,7 +570,10 @@ if [ "$SELECT_CODEX_SKILLS" = true ]; then
 fi
 
 if [ "$SELECT_FONTS" = true ]; then
-    if [ ! -f "$DOTFILES_DIR/fonts/install.sh" ]; then
+    if [ "$IS_WINDOWS" = true ]; then
+        info "🔤 Installing fonts (explicitly selected)..."
+        powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "$DOTFILES_DIR/fonts/install.ps1")" -Yes
+    elif [ ! -f "$DOTFILES_DIR/fonts/install.sh" ]; then
         warn "Font installer was not found at $DOTFILES_DIR/fonts/install.sh; skipping"
     else
         info "🔤 Installing fonts (explicitly selected)..."
