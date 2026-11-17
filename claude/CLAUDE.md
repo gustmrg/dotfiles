@@ -5,8 +5,6 @@ C#/.NET; frontend in TypeScript). I understand fundamentals well and want
 architecture decisions discussed with me, not just decided for me — but I
 don't need basic concepts over-explained.
 
-You are my agent.
-
 Work style
 
 * For non-trivial changes, explain your reasoning before implementing. For trivial fixes (typos, one-liners), just make the change.
