@@ -68,6 +68,7 @@ Options:
   🛠️  --skills         Install global agent skills in ~/.agents/skills
   🧪 --codex          Copy Codex skills into ~/.codex/skills
   👻 --ghostty        Install the Ghostty terminal config
+  🎨 --t3code         Copy the T3 Code theme into ~/.t3/userdata/themes (always copied, never linked)
   🔤 --fonts          Install the dotfiles font set (Fira Code, IBM Plex Mono, Source Code Pro, Iosevka, Geist Mono, JetBrains Mono)
   ❓ --help           Show this help
 
@@ -395,6 +396,7 @@ select_optional_links() {
     SELECT_SHARED_SKILLS=false
     SELECT_CODEX_SKILLS=false
     SELECT_GHOSTTY=false
+    SELECT_T3CODE=false
     SELECT_FONTS=false
 
     # Fonts are deliberately never included in --all or the interactive
@@ -411,6 +413,7 @@ select_optional_links() {
         SELECT_SHARED_SKILLS=true
         SELECT_CODEX_SKILLS=true
         SELECT_GHOSTTY=true
+        SELECT_T3CODE=true
         return
     fi
 
@@ -419,8 +422,9 @@ select_optional_links() {
     if has_arg "--skills" "$@"; then SELECT_SHARED_SKILLS=true; fi
     if has_arg "--codex" "$@"; then SELECT_CODEX_SKILLS=true; fi
     if has_arg "--ghostty" "$@"; then SELECT_GHOSTTY=true; fi
+    if has_arg "--t3code" "$@"; then SELECT_T3CODE=true; fi
 
-    if [ "$SELECT_OPENCODE" = true ] || [ "$SELECT_CLAUDE" = true ] || [ "$SELECT_SHARED_SKILLS" = true ] || [ "$SELECT_CODEX_SKILLS" = true ] || [ "$SELECT_GHOSTTY" = true ] || [ "$SELECT_FONTS" = true ]; then
+    if [ "$SELECT_OPENCODE" = true ] || [ "$SELECT_CLAUDE" = true ] || [ "$SELECT_SHARED_SKILLS" = true ] || [ "$SELECT_CODEX_SKILLS" = true ] || [ "$SELECT_GHOSTTY" = true ] || [ "$SELECT_T3CODE" = true ] || [ "$SELECT_FONTS" = true ]; then
         return
     fi
 
@@ -437,6 +441,7 @@ select_optional_links() {
     echo "  4) 🧪 Codex skills (~/.codex/skills, copied without symlinks)"
     echo "  5) 👻 Ghostty terminal config"
     echo "  6) 🔤 Fonts (Fira Code, IBM Plex Mono, Source Code Pro, Iosevka, Geist Mono, JetBrains Mono)"
+    echo "  7) 🎨 T3 Code theme (~/.t3/userdata/themes, copied without symlinks)"
     echo ""
     read -r -p "Choose numbers separated by commas/spaces, all, or Enter to skip: " selection
 
@@ -449,6 +454,7 @@ select_optional_links() {
                 SELECT_SHARED_SKILLS=true
                 SELECT_CODEX_SKILLS=true
                 SELECT_GHOSTTY=true
+                SELECT_T3CODE=true
                 ;;
             1|opencode) SELECT_OPENCODE=true ;;
             2|claude) SELECT_CLAUDE=true ;;
@@ -456,6 +462,7 @@ select_optional_links() {
             4|codex) SELECT_CODEX_SKILLS=true ;;
             5|ghostty) SELECT_GHOSTTY=true ;;
             6|fonts) SELECT_FONTS=true ;;
+            7|t3code) SELECT_T3CODE=true ;;
             "") ;;
             *) warn "Unknown option: $item" ;;
         esac
@@ -464,7 +471,7 @@ select_optional_links() {
 
 for arg in "$@"; do
     case "$arg" in
-        --minimal|--copy|--link|--all|--opencode|--claude|--skills|--codex|--ghostty|--fonts) ;;
+        --minimal|--copy|--link|--all|--opencode|--claude|--skills|--codex|--ghostty|--t3code|--fonts) ;;
         --help) usage; exit 0 ;;
         *) err "Unknown option: $arg"; usage; exit 1 ;;
     esac
@@ -569,6 +576,12 @@ if [ "$SELECT_CODEX_SKILLS" = true ]; then
     copy_codex_skills
 fi
 
+# Always a copy, never a link, so the same theme file also works on Windows.
+if [ "$SELECT_T3CODE" = true ]; then
+    info "🎨 Copying T3 Code theme..."
+    copy_entry "t3code/themes/gusty-code.json:$HOME/.t3/userdata/themes/gusty-code.json"
+fi
+
 if [ "$SELECT_FONTS" = true ]; then
     if [ "$IS_WINDOWS" = true ]; then
         info "🔤 Installing fonts (explicitly selected)..."
@@ -625,7 +638,7 @@ echo "    curl -fsSL $BOOTSTRAP_URL | bash"
 echo ""
 echo "  ⚙️  Optional setup without prompts:"
 echo "    ./bootstrap.sh --all"
-echo "    ./bootstrap.sh --opencode --claude --skills --codex --ghostty"
+echo "    ./bootstrap.sh --opencode --claude --skills --codex --ghostty --t3code"
 echo "    ./bootstrap.sh --fonts"
 echo "    ./bootstrap.sh --copy --all"
 echo ""

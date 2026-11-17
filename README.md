@@ -109,6 +109,7 @@ After a pull:
 - In copy mode, `dotsync` reminds you to rerun `./bootstrap.sh --copy` to apply the new files.
 - `~/.claude/settings.json` is always a local copy that bootstrap never overwrites. Port repo changes into it by hand (see [claude/README.md](claude/README.md)).
 - Codex skills are always copied. Rerun `./bootstrap.sh --codex` to refresh them.
+- The T3 Code theme is always copied. Rerun `./bootstrap.sh --t3code` to refresh it.
 
 ## Contents
 
@@ -119,6 +120,7 @@ After a pull:
 - `shell/` - Shell startup configuration copied or linked into the home directory.
 - `git/` - Git user defaults, aliases, and global ignore rules.
 - `ghostty/` - Ghostty terminal configuration, including macOS overrides applied through an optional `config.local` include.
+- `t3code/` - T3 Code themes copied into `~/.t3/userdata/themes`.
 - `fonts/` - Optional user-local installer for Fira Code, IBM Plex Mono, and Source Code Pro.
 - `vscode/` - VS Code and Cursor editor configuration assets.
 - `vscode/anysphere.cursor-themes-0.0.2/` - Cursor theme extension files for VS Code-compatible editors.
