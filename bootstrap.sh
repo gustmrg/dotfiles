@@ -68,7 +68,7 @@ Options:
   🛠️  --skills         Install global agent skills in ~/.agents/skills
   🧪 --codex          Copy Codex skills into ~/.codex/skills
   👻 --ghostty        Install the Ghostty terminal config
-  🎨 --t3code         Copy the T3 Code theme into ~/.t3/userdata/themes (always copied, never linked)
+  🎨 --t3code         Copy the T3 Code theme into \$T3CODE_HOME (default ~/.t3) and select it when the t3 CLI is available
   🔤 --fonts          Install the dotfiles font set (Fira Code, IBM Plex Mono, Source Code Pro, Iosevka, Geist Mono, JetBrains Mono)
   ❓ --help           Show this help
 
@@ -388,6 +388,37 @@ GITCONFIG
     fi
 }
 
+# Mirrors the app: $T3CODE_HOME, else ~/.t3, with themes under userdata/themes.
+install_t3code_theme() {
+    local src="t3code/themes/gusty-code.json"
+    local base="${T3CODE_HOME:-$HOME/.t3}"
+    local dst="$base/userdata/themes/gusty-code.json"
+    local changed=true t3_cli=""
+
+    if paths_match "$src" "$dst"; then changed=false; fi
+    copy_entry "$src:$dst"
+
+    # Selecting the theme is best effort and only happens when the file changed,
+    # so re-running bootstrap does not override a theme picked later in the app.
+    if [ "$changed" = false ]; then
+        return 0
+    fi
+
+    if command -v t3 >/dev/null 2>&1; then
+        t3_cli="t3"
+    elif [ -x "$base/bin/t3" ]; then
+        t3_cli="$base/bin/t3"
+    fi
+
+    if [ -z "$t3_cli" ]; then
+        info "t3 CLI not found; select Gusty Code in T3 Code's Appearance settings"
+    elif "$t3_cli" theme set --base-dir "$base" gusty-code >/dev/null 2>&1; then
+        ok "🎨 gusty-code -> selected as the T3 Code theme"
+    else
+        warn "Could not select the theme with the t3 CLI; select Gusty Code in T3 Code's Appearance settings"
+    fi
+}
+
 select_optional_links() {
     local selection=""
 
@@ -441,7 +472,7 @@ select_optional_links() {
     echo "  4) 🧪 Codex skills (~/.codex/skills, copied without symlinks)"
     echo "  5) 👻 Ghostty terminal config"
     echo "  6) 🔤 Fonts (Fira Code, IBM Plex Mono, Source Code Pro, Iosevka, Geist Mono, JetBrains Mono)"
-    echo "  7) 🎨 T3 Code theme (~/.t3/userdata/themes, copied without symlinks)"
+    echo "  7) 🎨 T3 Code theme (\$T3CODE_HOME/userdata/themes, copied without symlinks)"
     echo ""
     read -r -p "Choose numbers separated by commas/spaces, all, or Enter to skip: " selection
 
@@ -578,8 +609,8 @@ fi
 
 # Always a copy, never a link, so the same theme file also works on Windows.
 if [ "$SELECT_T3CODE" = true ]; then
-    info "🎨 Copying T3 Code theme..."
-    copy_entry "t3code/themes/gusty-code.json:$HOME/.t3/userdata/themes/gusty-code.json"
+    info "🎨 Installing T3 Code theme..."
+    install_t3code_theme
 fi
 
 if [ "$SELECT_FONTS" = true ]; then
