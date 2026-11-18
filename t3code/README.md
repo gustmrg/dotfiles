@@ -10,6 +10,6 @@ The theme is copied even in link mode so the same file also works on Windows. Wh
 
 `gusty-code.json` is the central theme for UI customizations: a dark palette with a light variant, plus a CSS block that spins the working indicator in the sidebar and flattens the UI by zeroing elevation shadows (focus rings are kept). Select it in T3 Code's Appearance settings after installing.
 
-The colors copy the stock T3 Code CSS values on purpose. Any active theme replaces the app's whole color set, and a theme cannot be published without colors, so this is how the theme changes only the flat look and the spinner. Do not replace them with the theme editor's default palette, which differs from the stock UI.
+The colors are the Gusty Code brand palette from the `gustmrg/t3code` fork (`assets/gusty/tokens.json` and `packages/shared/src/gustyTheme.ts` on the `codex/gusty-code-rebranding` branch), converted to hex. Any active theme replaces the app's whole color set, so keep both appearances in sync with those tokens when the brand changes.
 
 Only themes belong here. Do not version `client-settings.json`, `settings.json`, or anything else from `~/.t3`: they mix preferences with machine state and secrets references.
