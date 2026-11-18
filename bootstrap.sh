@@ -404,10 +404,16 @@ install_t3code_theme() {
         return 0
     fi
 
+    # On Windows the CLI is t3.cmd: Git Bash only resolves it by its full name
+    # and does not report .cmd files as executable, so -x cannot be used there.
     if command -v t3 >/dev/null 2>&1; then
         t3_cli="t3"
+    elif [ "$IS_WINDOWS" = true ] && command -v t3.cmd >/dev/null 2>&1; then
+        t3_cli="t3.cmd"
     elif [ -x "$base/bin/t3" ]; then
         t3_cli="$base/bin/t3"
+    elif [ "$IS_WINDOWS" = true ] && [ -f "$base/bin/t3.cmd" ]; then
+        t3_cli="$base/bin/t3.cmd"
     fi
 
     if [ -z "$t3_cli" ]; then
