@@ -108,13 +108,14 @@ After a pull:
 - Linked configs (the default) are updated immediately.
 - In copy mode, `dotsync` reminds you to rerun `./bootstrap.sh --copy` to apply the new files.
 - `~/.claude/settings.json` is always a local copy that bootstrap never overwrites. Port repo changes into it by hand (see [claude/README.md](claude/README.md)).
-- Codex skills are always copied. Rerun `./bootstrap.sh --codex` to refresh them.
+- `~/.codex/AGENTS.md` follows the install mode (symlink by default). Codex skills are always copied. Rerun `./bootstrap.sh --codex` to refresh them.
 - The T3 Code theme is always copied, and selected through the `t3` CLI when available. Rerun `./bootstrap.sh --t3code` to refresh it.
 
 ## Contents
 
 - `opencode/` - OpenCode agents and settings.
 - `claude/` - Claude Code settings.
+- `codex/AGENTS.md` - Global Codex instructions linked or copied to `~/.codex/AGENTS.md`.
 - `codex/skills/` - Codex-specific skills copied into `~/.codex/skills`.
 - `agents/skills/` - Skills shared by multiple agent tools via `~/.agents/skills`.
 - `shell/` - Shell startup configuration copied or linked into the home directory.

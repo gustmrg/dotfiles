@@ -66,7 +66,7 @@ Options:
   🤖 --opencode       Install all OpenCode optional configs
   🧠 --claude         Install Claude Code settings
   🛠️  --skills         Install global agent skills in ~/.agents/skills
-  🧪 --codex          Copy Codex skills into ~/.codex/skills
+  🧪 --codex          Install Codex AGENTS.md and copy Codex skills into ~/.codex/skills
   👻 --ghostty        Install the Ghostty terminal config
   🎨 --t3code         Copy the T3 Code theme into \$T3CODE_HOME (default ~/.t3) and select it when the t3 CLI is available
   🔤 --fonts          Install the dotfiles font set (Fira Code, IBM Plex Mono, Source Code Pro, Iosevka, Geist Mono, JetBrains Mono)
@@ -475,7 +475,7 @@ select_optional_links() {
     echo "  1) 🤖 OpenCode agents and settings"
     echo "  2) 🧠 Claude Code settings"
     echo "  3) 🛠️  Global agent skills (~/.agents/skills)"
-    echo "  4) 🧪 Codex skills (~/.codex/skills, copied without symlinks)"
+    echo "  4) 🧪 Codex AGENTS.md and skills (skills copied without symlinks)"
     echo "  5) 👻 Ghostty terminal config"
     echo "  6) 🔤 Fonts (Fira Code, IBM Plex Mono, Source Code Pro, Iosevka, Geist Mono, JetBrains Mono)"
     echo "  7) 🎨 T3 Code theme (\$T3CODE_HOME/userdata/themes, copied without symlinks)"
@@ -575,6 +575,11 @@ fi
 if [ "$SELECT_CLAUDE" = true ]; then
     # settings.json is handled by seed_claude_settings, always as a copy.
     add_entry "claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+fi
+
+if [ "$SELECT_CODEX_SKILLS" = true ]; then
+    # Skills are handled by copy_codex_skills, always as a copy.
+    add_entry "codex/AGENTS.md" "$HOME/.codex/AGENTS.md"
 fi
 
 if [ "$SELECT_SHARED_SKILLS" = true ]; then

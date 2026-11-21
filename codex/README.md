@@ -1,8 +1,8 @@
 # Codex
 
-Versioned Codex-specific skills.
+Versioned Codex configuration: global instructions (`AGENTS.md`) and skills.
 
-`bootstrap.sh --codex` copies each directory in `codex/skills/` into `~/.codex/skills/`.
+`bootstrap.sh --codex` links (or copies, with `--copy`) `AGENTS.md` to `~/.codex/AGENTS.md`, and copies each directory in `codex/skills/` into `~/.codex/skills/`.
 
 This intentionally uses copy instead of symlink so Codex can keep its internal `~/.codex/skills/.system` directory untouched.
 
